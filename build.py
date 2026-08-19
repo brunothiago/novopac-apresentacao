@@ -76,6 +76,7 @@ DECK_JS = open(f'{HERE}/assets/deck-stage.js', encoding='utf-8').read().replace(
 DECK_CHROME = open(f'{HERE}/assets/deck-chrome.html', encoding='utf-8').read()
 
 EXTRA_CSS = """
+  body{ margin:0; background:var(--navy); }
   /* ---- tabelas de dados (versão simples) ---- */
   table.data{ width:100%; border-collapse:collapse; }
   table.data th{ text-align:right; font-size:21px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); padding:0 22px 13px; border-bottom:2px solid var(--line-strong); white-space:nowrap; }

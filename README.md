@@ -7,6 +7,9 @@ da carteira de seleções do Novo PAC no Ministério das Cidades.
 
 Abra **`index.html`** em qualquer navegador (duplo clique). Não precisa de servidor.
 
+Há também a **`versao-detalhada.html`**: mesma base de dados, com painéis de destaque,
+barras proporcionais e dois slides extras (Calamidade RS e Seleções 2026), sem filtro de UF.
+
 - **← / →** navegam entre os slides · **M** abre o menu de slides · **F** tela cheia · **R** volta ao início
 - **Seletor "Recorte"** (canto superior direito de cada tabela): filtra todas as tabelas por UF.
   Também é possível abrir direto num estado com `index.html?uf=SP`.
@@ -50,8 +53,10 @@ Cada tabela traz a **data de atualização**, a **legenda do que entra na contag
 ## Estrutura
 
 ```
-index.html              apresentação final (autocontida)
-build.py                gerador — lê data/ e monta o index.html
+index.html              apresentação simples (autocontida, com filtro de UF)
+versao-detalhada.html   apresentação detalhada (painéis, barras e slides extras)
+build.py                gerador da versão simples — lê data/ e monta o index.html
+build_detalhada.py      gerador da versão detalhada
 data/                   extrações-fonte (xlsx + csv)
 assets/deck.css         design system do deck (gov.br)
 assets/deck-stage.js    web component <deck-stage> (navegação, escala, impressão)
