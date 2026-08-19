@@ -1,0 +1,206 @@
+<script>
+(function(){
+  function reflowAll(){
+    document.querySelectorAll('deck-stage > section .dek, deck-stage > section .divframe').forEach(function(el){
+      var d = el.style.display;
+      el.style.display = 'none'; void el.offsetWidth;
+      el.style.display = d;
+    });
+  }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(reflowAll); }
+  setTimeout(reflowAll, 1200);
+})();
+</script>
+
+<!-- ============ DICA DE ROTAÇÃO (celular/tablet em retrato) ============ -->
+<div class="rotate-hint" id="rotateHint" role="dialog" aria-label="Gire o aparelho">
+  <svg class="rh-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"></rect><line x1="7" y1="6" x2="17" y2="6"></line><line x1="7" y1="18" x2="17" y2="18"></line><circle cx="12" cy="20" r=".6"></circle></svg>
+  <div class="rh-t">Gire o aparelho</div>
+  <p class="rh-s">A apresentação é widescreen (16:9). Na horizontal ela ocupa a tela inteira.</p>
+  <button class="rh-x" id="rotateHintX" type="button">Ver assim mesmo</button>
+</div>
+<script>
+(function(){
+  var x = document.getElementById('rotateHintX');
+  var hint = document.getElementById('rotateHint');
+  if (x && hint) x.addEventListener('click', function(){ hint.setAttribute('data-dismissed',''); });
+})();
+</script>
+
+<!-- ============ BARRA DE CONTROLE + MENU DE SLIDES ============ -->
+<div class="deck-bar-zone" id="deckBarZone">
+  <div class="deck-bar" role="toolbar" aria-label="Controles da apresentação">
+    <button class="db-nav" id="dbPrev" type="button" aria-label="Slide anterior" title="Anterior (←)"><svg class="db-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"></path></svg></button>
+    <span class="db-count"><b id="dbCur">01</b> / <span id="dbTot">00</span></span>
+    <button class="db-nav" id="dbNext" type="button" aria-label="Próximo slide" title="Próximo (→)"><svg class="db-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
+    <span class="db-sep"></span>
+    <button class="db-reset" id="dbReset" type="button" title="Reiniciar (R)">Início<span class="kbd">R</span></button>
+    <span class="db-sep"></span>
+    <button class="db-full" id="dbFull" type="button" aria-label="Tela cheia" title="Tela cheia (F)"><svg class="db-ico" id="dbFullIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"></path></svg></button>
+    <span class="db-sep"></span>
+    <button class="db-menu" id="deckMenuBtn" type="button" aria-label="Abrir menu de slides"><svg class="db-ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>Slides</button>
+  </div>
+</div>
+<div class="deck-menu" id="deckMenu" role="dialog" aria-modal="true" aria-label="Ir para o slide">
+  <div class="deck-menu-panel">
+    <div class="deck-menu-head">
+      <h2>Ir para o slide</h2>
+      <span class="hint">M abre · Esc fecha</span>
+      <button class="deck-menu-close" id="deckMenuClose" aria-label="Fechar">×</button>
+    </div>
+    <div class="deck-menu-groups" id="deckMenuGroups"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var PART_COLORS = { '1':'#BC4749', '2':'#1351B4', '3':'#168821', '4':'#B38600' };
+  var stage = document.querySelector('deck-stage');
+  var menu = document.getElementById('deckMenu');
+  var groupsEl = document.getElementById('deckMenuGroups');
+  var btn = document.getElementById('deckMenuBtn');
+  if (!stage || !menu) return;
+
+  var sections = Array.prototype.slice.call(stage.querySelectorAll(':scope > section'));
+
+  // Agrupar por Parte (capa → divisor inicia novo grupo → conteúdo segue)
+  var groups = [], cur = null;
+  sections.forEach(function(s, i){
+    var label = (s.getAttribute('data-label') || ('Slide ' + (i+1))).trim();
+    var pm = (s.className.match(/\bp([1-4])\b/) || [])[1];
+    var color = PART_COLORS[pm] || '#9FC2F0';
+    if (s.classList.contains('cover')) {
+      cur = { title:'Abertura', sub:'', color:'#9FC2F0', navIndex:i, items:[] }; groups.push(cur);
+      cur.items.push({ i:i, label:'Capa', divider:false, color:'#9FC2F0' });
+    } else if (s.classList.contains('divider')) {
+      var dt = s.querySelector('.divtitle'); var dk = s.querySelector('.divkick .k');
+      cur = { title:(dt?dt.textContent.trim():label), sub:(dk?dk.textContent.trim():''), color:color, navIndex:i, items:[] };
+      groups.push(cur);
+    } else {
+      if (!cur) { cur = { title:'', sub:'', color:color, navIndex:i, items:[] }; groups.push(cur); }
+      cur.items.push({ i:i, label:label, divider:false, color:color });
+    }
+  });
+
+  // Renderizar
+  groups.forEach(function(g){
+    var col = document.createElement('div'); col.className = 'dmg';
+    var k = document.createElement('button'); k.className = 'dmg-kicker';
+    if (typeof g.navIndex === 'number') { k.dataset.index = g.navIndex; k.style.setProperty('--mc', g.color); }
+    k.innerHTML = '<span class="dot" style="background:'+g.color+'"></span>'
+      + (g.sub ? '<span class="kt">'+g.sub+'</span>' : '')
+      + '<span class="ks">'+g.title+'</span>';
+    k.addEventListener('click', function(){ if (typeof g.navIndex === 'number') go(g.navIndex); });
+    col.appendChild(k);
+    g.items.forEach(function(it){
+      var b = document.createElement('button');
+      b.className = 'dm-item';
+      b.dataset.index = it.i;
+      if (it.divider) b.setAttribute('data-divider','');
+      b.style.setProperty('--mc', it.color);
+      b.innerHTML = '<span class="n">'+String(it.i+1).padStart(2,'0')+'</span><span class="l">'+it.label+'</span>';
+      b.addEventListener('click', function(){ go(it.i); });
+      col.appendChild(b);
+    });
+    groupsEl.appendChild(col);
+  });
+
+  var itemEls = Array.prototype.slice.call(groupsEl.querySelectorAll('.dm-item, .dmg-kicker[data-index]'));
+
+  function currentIndex(){
+    for (var i=0;i<sections.length;i++){ if (sections[i].hasAttribute('data-deck-active')) return i; }
+    return -1;
+  }
+  function markCurrent(){
+    var ci = currentIndex();
+    itemEls.forEach(function(el){
+      if (parseInt(el.dataset.index,10) === ci) el.setAttribute('data-current','');
+      else el.removeAttribute('data-current');
+    });
+  }
+  function open(){ markCurrent(); menu.setAttribute('data-open',''); }
+  function close(){ menu.removeAttribute('data-open'); }
+  function toggle(){ menu.hasAttribute('data-open') ? close() : open(); }
+  function go(i){
+    if (stage.goTo) stage.goTo(i);
+    else { var s=sections[i]; if(s) s.scrollIntoView(); }
+    close();
+  }
+
+  btn.addEventListener('click', toggle);
+  document.getElementById('deckMenuClose').addEventListener('click', close);
+  menu.addEventListener('click', function(e){ if (e.target === menu) close(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && menu.hasAttribute('data-open')) { e.stopPropagation(); close(); return; }
+    var tag = (e.target && e.target.tagName) || '';
+    if ((e.key === 'm' || e.key === 'M') && tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); toggle(); }
+  }, true);
+
+  // ---- Suprime o overlay nativo (números + Reset que piscavam) ----
+  function hideNativeOverlay(){
+    try{
+      var sr = stage.shadowRoot || stage._root;
+      if (sr && !sr.getElementById('deck-no-overlay')){
+        var st = document.createElement('style');
+        st.id = 'deck-no-overlay';
+        st.textContent = '.overlay{ display:none !important; }';
+        sr.appendChild(st);
+      }
+    }catch(e){}
+  }
+  hideNativeOverlay();
+  setTimeout(hideNativeOverlay, 0);
+  setTimeout(hideNativeOverlay, 600);
+
+  // ---- Barra de controle inferior (contador + navegação + reinício) ----
+  var curEl = document.getElementById('dbCur');
+  var totEl = document.getElementById('dbTot');
+  totEl.textContent = String(sections.length).padStart(2,'0');
+  function updateCount(){
+    var ci = currentIndex();
+    if (ci >= 0) curEl.textContent = String(ci+1).padStart(2,'0');
+    markCurrent();
+  }
+  updateCount();
+
+  document.getElementById('dbPrev').addEventListener('click', function(){
+    stage.prev ? stage.prev() : go(Math.max(0, currentIndex()-1));
+  });
+  document.getElementById('dbNext').addEventListener('click', function(){
+    stage.next ? stage.next() : go(Math.min(sections.length-1, currentIndex()+1));
+  });
+  document.getElementById('dbReset').addEventListener('click', function(){
+    stage.reset ? stage.reset() : go(0);
+  });
+
+  // ---- Tela cheia (Fullscreen API) ----
+  function fsElement(){ return document.fullscreenElement || document.webkitFullscreenElement; }
+  function toggleFullscreen(){
+    var el = document.documentElement;
+    if (fsElement()){
+      (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+    } else {
+      (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+    }
+  }
+  var fullBtn = document.getElementById('dbFull');
+  var fullIco = document.getElementById('dbFullIco');
+  if (fullBtn) fullBtn.addEventListener('click', toggleFullscreen);
+  function syncFsIcon(){
+    if (!fullIco) return;
+    fullIco.innerHTML = fsElement()
+      ? '<path d="M9 4v3a2 2 0 0 1-2 2H4M20 9h-3a2 2 0 0 1-2-2V4M9 20v-3a2 2 0 0 0-2-2H4M15 20v-3a2 2 0 0 1 2-2h3"/>'
+      : '<path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"/>';
+  }
+  document.addEventListener('fullscreenchange', syncFsIcon);
+  document.addEventListener('webkitfullscreenchange', syncFsIcon);
+
+  // tecla F → tela cheia
+  document.addEventListener('keydown', function(e){
+    var tag = (e.target && e.target.tagName) || '';
+    if ((e.key === 'f' || e.key === 'F') && tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); toggleFullscreen(); }
+  });
+
+  var obs = new MutationObserver(updateCount);
+  obs.observe(stage, { subtree:true, attributes:true, attributeFilter:['data-deck-active'] });
+})();
+</script>
