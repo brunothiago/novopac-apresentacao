@@ -10,3 +10,6 @@ python/config.env
 # temporários do Excel
 ~$*
 data/~$*
+
+# arquivos operacionais de atualização do banco (não publicar)
+atualizacao_banco_*.xlsx
