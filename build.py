@@ -110,6 +110,13 @@ EXTRA_CSS = """
   .title-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px; }
   .title-row .title-block{ margin-bottom:0; }
   @media print{ .ufctl select{ border:0; padding:0; } }
+  /* link da base em Excel (slide de encerramento) */
+  .xlsxlink{ display:inline-flex; align-items:center; gap:10px; margin-left:40px;
+    font-size:var(--t-foot); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--amber-bright); text-decoration:none; border:1px solid rgba(255,255,255,.32);
+    border-radius:2px; padding:9px 18px; transition:background .15s, border-color .15s; }
+  .xlsxlink:hover{ background:rgba(255,255,255,.10); border-color:var(--amber-bright); }
+  .xlsxlink svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 """
 
 HEAD = f"""<!DOCTYPE html>
@@ -259,6 +266,10 @@ SLIDES = f"""
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
       <span class="org" style="color:var(--paper);">Atualizado em {DATA_ATUALIZACAO}</span>
+      <a class="xlsxlink" href="data/{os.path.basename(XLSX)}" download title="Baixar a base de dados em Excel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 19h16"></path></svg>
+        XLSX Base
+      </a>
     </div>
   </section>
 
