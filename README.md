@@ -17,6 +17,12 @@ barras proporcionais e dois slides extras (Calamidade RS e Seleções 2026), sem
   (totais, quantidade, fonte e novas seleções), ligam/desligam cada status na contagem.
   Via URL: `index.html?status=sel` ou `?status=enq`. As tabelas de Migrado, Enquadradas e
   Governadores já são recortes de status por natureza e não mudam.
+- **Botões "Ano"** (2023 / 2024 / 2026): recorte por ano de seleção nas mesmas tabelas.
+  Os rótulos são de exibição (nos dados, `ano_selecao` segue o ano da portaria:
+  2024→"2023", 2025→"2024", 2026→"2026" — ver `ANO_LABEL` no build.py). As migradas
+  não têm ano de seleção e seguem contando. Via URL: `?ano=2026` ou `?ano=2023,2024`.
+- **Rolagem do mouse**: scroll para baixo avança o slide, para cima volta
+  (além de ← / → e do toque).
 - **Exportar PDF** (slide final): baixa `novopac-mcid-investimentos.pdf`, pré-gerado no build
   (um slide por página, paisagem 16:9) — no celular abre direto no visualizador com o botão
   de compartilhar. Ctrl/Cmd+P no desktop também funciona, no recorte selecionado.
@@ -40,6 +46,11 @@ Cada tabela traz a **data de atualização**, a **legenda do que entra na contag
 7. Propostas enquadradas — somente FIN
 8. Governadores — seleções pactuadas com governos estaduais
 9. Encerramento
+
+## Versão
+
+O rodapé exibe "versão X.Y" (constante `VERSAO` no topo do `build.py`).
+Convenção: **subir o número a cada commit** que altere a apresentação e rodar o build.
 
 ## Dados e convenções
 

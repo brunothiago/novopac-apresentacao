@@ -25,6 +25,9 @@ CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
+VERSAO = '1.0'  # subir a cada commit que altere a apresentação
+# anos de exibição (somente rótulo — nos dados, ano_selecao segue o ano da portaria)
+ANO_LABEL = {2024: '2023', 2025: '2024', 2026: '2026'}
 
 LABELS = {
     'Médias e Grandes Cidades': 'Mobilidade: Médias e Grandes Cidades',
@@ -55,17 +58,20 @@ for d in (x, mig):
     d['mod'] = d.modalidade.replace(LABELS)
     d['uf'] = d.uf.astype(str).str.strip().str.upper()
 
-# linhas compactas: [modIdx, fonteIdx, uf, kind, gov, ogu, fin]
+# linhas compactas: [modIdx, fonteIdx, uf, kind, gov, ogu, fin, ano]
 # kind: 0 = migrada · 1 = selecionada · 2 = enquadrada  |  gov: 1 = grupo Governadores
+# ano: rótulo de exibição (ANO_LABEL); '' para migradas (fora do recorte por ano)
 rows = []
 for _, r in mig.iterrows():
     rows.append([MODS.index(r['mod']), FONTES[r.fonte], r.uf, 0, 0,
-                 round(float(r.vlr_portaria_ogu), 2), round(float(r.vlr_portaria_fin), 2)])
+                 round(float(r.vlr_portaria_ogu), 2), round(float(r.vlr_portaria_fin), 2), ''])
 for _, r in x.iterrows():
     kind = 2 if r.status_selecao == 'enquadrada' else 1
     gov = 1 if r.grupo_modalidade == 'Governadores' else 0
     rows.append([MODS.index(r['mod']), FONTES[r.fonte], r.uf, kind, gov,
-                 round(float(r.vlr_portaria_ogu), 2), round(float(r.vlr_portaria_fin), 2)])
+                 round(float(r.vlr_portaria_ogu), 2), round(float(r.vlr_portaria_fin), 2),
+                 ANO_LABEL[int(r.ano_selecao)]])
+ANOS = sorted({r[7] for r in rows if r[7]})
 
 # 'BR' (abrangência nacional) contaria no Brasil, mas nunca é opção de estado
 ufs = sorted({r[2] for r in rows} - {'BR'})
@@ -134,6 +140,8 @@ EXTRA_CSS = """
   .fsbtn:active{ background:rgba(19,81,180,.75); }
   @media (hover: none), (pointer: coarse){ .fsbtn{ display:flex; } }
   @media print{ .fsbtn{ display:none !important; } }
+  /* versão da apresentação (rodapés) */
+  .ver{ font-size:18px; font-weight:600; letter-spacing:.06em; opacity:.72; margin-left:14px; white-space:nowrap; }
   /* link de fonte dos dados (encerramento) */
   .srclink{ display:inline-flex; align-items:center; gap:16px; font-size:29px; font-weight:600;
     color:#fff; text-decoration:none; border:1px solid rgba(255,255,255,.32); border-radius:2px;
@@ -173,7 +181,7 @@ CHROME_TOP = """    <div class="top">
 FOOT = f"""    <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em {DATA_ATUALIZACAO}</span>
-      <span class="pageno"></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão {VERSAO}</span></span>
     </div>
 """
 
@@ -185,7 +193,10 @@ def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False, statu
              '<button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button>'
              '<button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button>'
              '</div></div>') if status else ''
-    stmeta = '<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b>' if status else ''
+    anos_btns = ''.join(f'<button type="button" class="stbtn anobtn" data-ano="{a}" aria-pressed="true">{a}</button>' for a in ANOS)
+    anoctl = (f'\n          <div class="stctl anoctl"><label>Ano</label><div class="stgrp">{anos_btns}</div></div>') if status else ''
+    stmeta = ('<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b>'
+              '<span class="sep">·</span>Anos: <b class="anoname">todos</b>') if status else ''
     return f"""
   <section class="p2 content" data-label="{label}">
 {CHROME_TOP}    <div class="body tight">
@@ -194,7 +205,7 @@ def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False, statu
           <h2 class="title">{titulo}</h2>{dek_html}
         </div>
         <div class="ctrls">
-          <div class="ufctl"><label for="{tabela_id}-uf">Recorte</label><select id="{tabela_id}-uf" class="ufsel">{uf_opts}</select></div>{stctl}
+          <div class="ufctl"><label for="{tabela_id}-uf">Recorte</label><select id="{tabela_id}-uf" class="ufsel">{uf_opts}</select></div>{stctl}{anoctl}
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
@@ -250,7 +261,7 @@ SLIDES = f"""
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Atualizado em {DATA_ATUALIZACAO}</span>
+      <span class="org" style="color:var(--paper);">Atualizado em {DATA_ATUALIZACAO}<span class="ver">versão {VERSAO}</span></span>
     </div>
   </section>
 
@@ -270,7 +281,7 @@ SLIDES = f"""
 {slide('Novas Seleções', 'Novas seleções', 't-novas',
        'Contagem: novas seleções, sem migradas',
        ['Qtd. FIN', 'Qtd. OGU', 'Valor FIN (R$ mi)', 'Valor OGU (R$ mi)'],
-       dek='2024, 2025 e 2026 (sem migradas)', dense=True, status=True)}
+       dek='2023, 2024 e 2026 (sem migradas)', dense=True, status=True)}
 {slide('Enquadradas', 'Novo PAC — propostas enquadradas', 't-enq',
        'Contagem: somente propostas enquadradas (FIN)',
        ['Qtd. FIN', 'Valor FIN (R$ mi)'])}
@@ -301,7 +312,7 @@ SLIDES = f"""
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Atualizado em {DATA_ATUALIZACAO}</span>
+      <span class="org" style="color:var(--paper);">Atualizado em {DATA_ATUALIZACAO}<span class="ver">versão {VERSAO}</span></span>
       <a class="xlsxlink" href="{PDF_NAME}" download title="Baixar o PDF da apresentação (um slide por página)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3h9l5 5v13z"></path><path d="M14 3v6h6"></path></svg>
         Exportar PDF
@@ -343,11 +354,13 @@ SLIDES = f"""
 """
 
 APP_JS = """
-// ===== dados e filtros (UF e status) =====
-// linha: [modIdx, fonteIdx, uf, kind, gov, vlrOGU, vlrFIN]
+// ===== dados e filtros (UF, status e ano) =====
+// linha: [modIdx, fonteIdx, uf, kind, gov, vlrOGU, vlrFIN, ano]
 // fonte: 0=FIN 1=OGU 2=OGU/FIN · kind: 0=migrada 1=selecionada 2=enquadrada · gov: grupo Governadores
+// ano: rótulo de exibição ('' = migrada, fora do recorte por ano)
 const MODS = __MODS__;
 const ROWS = __ROWS__;
+const ANOS = __ANOS__;
 
 const fmtInt = new Intl.NumberFormat('pt-BR');
 const fmtMi = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -372,7 +385,8 @@ const TABLES = [
   { id: 't-gov',    ds: 'gov',  status: false, cols: ['qf', 'qo', 'fin', 'ogu'] },
 ];
 
-const state = { uf: '', sel: true, enq: true };
+const state = { uf: '', sel: true, enq: true, anos: {} };
+ANOS.forEach((a) => { state.anos[a] = true; });
 const isSel = (r) => r[3] <= 1; // migradas (kind 0) contam como selecionadas
 
 function aggregate(t) {
@@ -382,6 +396,7 @@ function aggregate(t) {
     if (!keep(r)) continue;
     if (state.uf && r[2] !== state.uf) continue;
     if (t.status && !(isSel(r) ? state.sel : state.enq)) continue;
+    if (t.status && r[7] && !state.anos[r[7]]) continue;
     const a = acc[r[0]];
     a.n += 1;
     if (r[1] === 0) a.qf += 1; else if (r[1] === 1) a.qo += 1;
@@ -416,11 +431,17 @@ function render() {
   const nome = state.uf || 'Brasil';
   const stname = state.sel && state.enq ? 'selecionadas + enquadradas'
     : (state.sel ? 'somente selecionadas' : 'somente enquadradas');
+  const anosOn = ANOS.filter((a) => state.anos[a]);
+  const anoname = anosOn.length === ANOS.length ? 'todos' : anosOn.join(' + ');
   document.querySelectorAll('.ufname').forEach((el) => { el.textContent = nome; });
   document.querySelectorAll('.stname').forEach((el) => { el.textContent = stname; });
+  document.querySelectorAll('.anoname').forEach((el) => { el.textContent = anoname; });
   document.querySelectorAll('select.ufsel').forEach((el) => { el.value = state.uf; });
-  document.querySelectorAll('.stbtn').forEach((el) => {
+  document.querySelectorAll('.stbtn:not(.anobtn)').forEach((el) => {
     el.setAttribute('aria-pressed', String(state[el.dataset.st]));
+  });
+  document.querySelectorAll('.anobtn').forEach((el) => {
+    el.setAttribute('aria-pressed', String(!!state.anos[el.dataset.ano]));
   });
 }
 
@@ -431,11 +452,16 @@ function render() {
   state.uf = uf;
   const st = (params.get('status') || '').toLowerCase().trim();
   if (st === 'sel') state.enq = false; else if (st === 'enq') state.sel = false;
+  const anoParam = (params.get('ano') || '').trim();
+  if (anoParam) {
+    const pedidos = anoParam.split(',').map((a) => a.trim()).filter((a) => ANOS.includes(a));
+    if (pedidos.length) ANOS.forEach((a) => { state.anos[a] = pedidos.includes(a); });
+  }
   render();
   document.querySelectorAll('select.ufsel').forEach((el) => {
     el.addEventListener('change', function () { state.uf = this.value; render(); });
   });
-  document.querySelectorAll('.stbtn').forEach((el) => {
+  document.querySelectorAll('.stbtn:not(.anobtn)').forEach((el) => {
     el.addEventListener('click', function () {
       const k = this.dataset.st, other = k === 'sel' ? 'enq' : 'sel';
       if (state[k] && !state[other]) return; // pelo menos um status ativo
@@ -443,10 +469,36 @@ function render() {
       render();
     });
   });
+  document.querySelectorAll('.anobtn').forEach((el) => {
+    el.addEventListener('click', function () {
+      const a = this.dataset.ano;
+      const ligados = ANOS.filter((y) => state.anos[y]);
+      if (state.anos[a] && ligados.length === 1) return; // pelo menos um ano ativo
+      state.anos[a] = !state.anos[a];
+      render();
+    });
+  });
+
+  // ---- navegação por rolagem do mouse: para baixo avança, para cima volta ----
+  const stage = document.querySelector('deck-stage');
+  const menu = document.getElementById('deckMenu');
+  let ultimoAvanco = 0, acumulado = 0;
+  window.addEventListener('wheel', function (e) {
+    if (!stage || !stage.next) return;
+    if (menu && menu.hasAttribute('data-open')) return;
+    const agora = Date.now();
+    if (agora - ultimoAvanco < 700) { acumulado = 0; return; }
+    if ((acumulado > 0) !== (e.deltaY > 0)) acumulado = 0;
+    acumulado += e.deltaY;
+    if (Math.abs(acumulado) < 60) return;
+    if (acumulado > 0) stage.next(); else stage.prev();
+    acumulado = 0; ultimoAvanco = agora;
+  }, { passive: true });
 })();
 """
 
 app_js = APP_JS.replace('__MODS__', json.dumps(MODS, ensure_ascii=False)) \
+               .replace('__ANOS__', json.dumps(ANOS)) \
                .replace('__ROWS__', json.dumps(rows, ensure_ascii=False, separators=(',', ':')))
 
 html = (HEAD + SLIDES
