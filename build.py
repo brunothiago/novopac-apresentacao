@@ -25,7 +25,7 @@ CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
-VERSAO = '1.4'  # subir a cada commit que altere a apresentação
+VERSAO = '1.5'  # subir a cada commit que altere a apresentação
 # FIRECE — financiamento da mesma temática FORA do escopo do Novo PAC.
 # Valor fixo: atualizar somente quando o usuário indicar (e subir a VERSAO).
 FIRECE_VALOR = 'R$ 34 bi'
@@ -302,7 +302,7 @@ SLIDES = f"""
        dek='Drenagem Urbana e Contenção de Encostas, por fonte', status=True,
        extra=f'''
         <div class="aside-fin">
-          <div class="af-label">Fora do escopo do Novo PAC</div>
+          <div class="af-label">+ Investimento de Prevenção a Desastres</div>
           <div class="af-row">
             <span class="af-name">FIRECE</span>
             <span class="af-val">{FIRECE_VALOR}</span>
