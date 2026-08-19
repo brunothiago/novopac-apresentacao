@@ -25,7 +25,7 @@ CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
-VERSAO = '1.1'  # subir a cada commit que altere a apresentação
+VERSAO = '1.2'  # subir a cada commit que altere a apresentação
 # anos de exibição (somente rótulo — nos dados, ano_selecao segue o ano da portaria)
 ANO_LABEL = {2024: '2023', 2025: '2024', 2026: '2026'}
 
@@ -498,7 +498,7 @@ function render() {
     if (!stage || !stage.next) return;
     if (menu && menu.hasAttribute('data-open')) return;
     const agora = Date.now();
-    if (agora - ultimoAvanco < 700) { acumulado = 0; return; }
+    if (agora - ultimoAvanco < 400) { acumulado = 0; return; }
     if ((acumulado > 0) !== (e.deltaY > 0)) acumulado = 0;
     acumulado += e.deltaY;
     if (Math.abs(acumulado) < 60) return;
