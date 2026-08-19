@@ -25,7 +25,7 @@ CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
-VERSAO = '1.0'  # subir a cada commit que altere a apresentação
+VERSAO = '1.1'  # subir a cada commit que altere a apresentação
 # anos de exibição (somente rótulo — nos dados, ano_selecao segue o ano da portaria)
 ANO_LABEL = {2024: '2023', 2025: '2024', 2026: '2026'}
 
@@ -482,6 +482,17 @@ function render() {
   // ---- navegação por rolagem do mouse: para baixo avança, para cima volta ----
   const stage = document.querySelector('deck-stage');
   const menu = document.getElementById('deckMenu');
+
+  // setas ↑/↓ também passam os slides (↓ avança, ↑ volta) — ←/→ já são nativas do deck
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    if (!stage || !stage.next) return;
+    if (menu && menu.hasAttribute('data-open')) return;
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'SELECT' || tag === 'INPUT' || tag === 'TEXTAREA') return;
+    e.preventDefault();
+    if (e.key === 'ArrowDown') stage.next(); else stage.prev();
+  });
   let ultimoAvanco = 0, acumulado = 0;
   window.addEventListener('wheel', function (e) {
     if (!stage || !stage.next) return;
