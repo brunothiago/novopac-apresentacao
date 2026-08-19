@@ -3,7 +3,11 @@
 
 Espelha os agrupamentos da apresentação original (tabelas por modalidade), acrescentando:
 - data de atualização e legenda de contagem em cada tabela;
-- seletor de UF que refiltra todas as tabelas (também aceita ?uf=XX na URL).
+- seletor de UF que refiltra todas as tabelas (também aceita ?uf=XX na URL);
+- botões de status (Selecionadas / Enquadradas) nas tabelas que somam os dois
+  status (também aceita ?status=sel ou ?status=enq na URL).
+
+Exclui as 2 propostas MCMV (FNHIS / FNHIS SUB50) da contagem.
 
 Fontes (em data/):
 - base_completa_atualizada_20260818_1126.xlsx — seleções 2024-2026 (selecionadas + enquadradas)
@@ -23,16 +27,14 @@ DATA_ATUALIZACAO = '18/08/2026'
 
 LABELS = {
     'Médias e Grandes Cidades': 'Mobilidade: Médias e Grandes Cidades',
-    'MCMV FNHIS': 'MCMV (Calamidade RS)',
-    'MCMV FNHIS SUB50': 'MCMV (Calamidade RS)',
 }
+MCMV = ('MCMV FNHIS', 'MCMV FNHIS SUB50')  # fora da contagem, a pedido
 MODS = [
     'Abastecimento de Água - Rural',
     'Abastecimento de Água - Urbano',
     'Contenção de Encostas',
     'Drenagem Urbana',
     'Esgotamento Sanitário',
-    'MCMV (Calamidade RS)',
     'Mobilidade: Médias e Grandes Cidades',
     'Regularização Fundiária',
     'Renovação de Frota',
@@ -43,6 +45,7 @@ FONTES = {'FIN': 0, 'OGU': 1, 'OGU/FIN': 2}
 
 # ---------------------------------------------------------------- carga
 x = pd.read_excel(XLSX, header=1)
+x = x[~x.modalidade.isin(MCMV)]
 v = pd.read_csv(CSV)
 mig = v[v.origem_dado == 'Novo PAC - Retomada'].copy()
 for d in (x, mig):
@@ -63,7 +66,7 @@ for _, r in x.iterrows():
     rows.append([MODS.index(r['mod']), FONTES[r.fonte], r.uf, kind, gov,
                  round(float(r.vlr_portaria_ogu), 2), round(float(r.vlr_portaria_fin), 2)])
 
-# 'BR' marca 1 proposta MCMV de abrangência nacional: conta no Brasil, mas não é opção de estado
+# 'BR' (abrangência nacional) contaria no Brasil, mas nunca é opção de estado
 ufs = sorted({r[2] for r in rows} - {'BR'})
 uf_opts = '<option value="">Brasil — todas as UFs</option>' + ''.join(
     f'<option value="{u}">{u}</option>' for u in ufs)
@@ -93,11 +96,17 @@ EXTRA_CSS = """
   .tmeta{ font-size:21px; color:var(--ink-soft); margin:0 0 16px; }
   .tmeta b{ color:var(--navy); font-weight:700; }
   .tmeta .sep{ margin:0 12px; opacity:.5; }
-  /* seletor de UF */
-  .ufctl{ display:flex; align-items:center; gap:14px; }
-  .ufctl label{ font-size:21px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  /* controles de filtro (UF + status) */
+  .ctrls{ display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+  .ufctl, .stctl{ display:flex; align-items:center; gap:14px; }
+  .ufctl label, .stctl label{ font-size:21px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
   .ufctl select{ font-family:'rawline','Raleway',sans-serif; font-size:23px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--line-strong); border-radius:2px; padding:10px 16px; min-width:300px; cursor:pointer; }
   .ufctl select:focus{ outline:2px solid var(--blue); outline-offset:1px; }
+  .stgrp{ display:flex; border:1px solid var(--line-strong); border-radius:2px; overflow:hidden; }
+  .stbtn{ font-family:'rawline','Raleway',sans-serif; font-size:21px; font-weight:700; letter-spacing:.02em; padding:11px 22px; background:#fff; color:var(--ink-soft); border:0; cursor:pointer; }
+  .stbtn + .stbtn{ border-left:1px solid var(--line-strong); }
+  .stbtn[aria-pressed="true"]{ background:var(--blue); color:#fff; }
+  .stbtn:focus-visible{ outline:2px solid var(--blue); outline-offset:-2px; }
   .title-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px; }
   .title-row .title-block{ margin-bottom:0; }
   @media print{ .ufctl select{ border:0; padding:0; } }
@@ -134,9 +143,14 @@ FOOT = f"""    <hr class="hr">
 """
 
 
-def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False):
+def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False, status=False):
     ths = ''.join(f'<th>{c}</th>' for c in colunas)
     dek_html = f'\n        <p class="dek" style="max-width:80ch; font-style:italic;">{dek}</p>' if dek else ''
+    stctl = ('\n          <div class="stctl"><label>Status</label><div class="stgrp">'
+             '<button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button>'
+             '<button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button>'
+             '</div></div>') if status else ''
+    stmeta = '<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b>' if status else ''
     return f"""
   <section class="p2 content" data-label="{label}">
 {CHROME_TOP}    <div class="body tight">
@@ -144,10 +158,12 @@ def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False):
         <div class="title-block tight">
           <h2 class="title">{titulo}</h2>{dek_html}
         </div>
-        <div class="ufctl"><label for="{tabela_id}-uf">Recorte</label><select id="{tabela_id}-uf" class="ufsel">{uf_opts}</select></div>
+        <div class="ctrls">
+          <div class="ufctl"><label for="{tabela_id}-uf">Recorte</label><select id="{tabela_id}-uf" class="ufsel">{uf_opts}</select></div>{stctl}
+        </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>{DATA_ATUALIZACAO}</b><span class="sep">·</span>{legenda}<span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>{DATA_ATUALIZACAO}</b><span class="sep">·</span>{legenda}{stmeta}<span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data{' dense' if dense else ''}" id="{tabela_id}">
           <thead><tr><th>Modalidade</th>{ths}</tr></thead>
           <tbody></tbody>
@@ -204,22 +220,22 @@ SLIDES = f"""
   </section>
 
 {slide('Investimentos Totais', 'Investimentos totais', 't-totais',
-       'Contagem: migradas + selecionadas + enquadradas (FIN)',
-       ['Total de propostas', 'Valor total (R$ mi)'], dense=True)}
+       'Contagem: migradas + novas seleções',
+       ['Total de propostas', 'Valor total (R$ mi)'], dense=True, status=True)}
 {slide('Por quantidade', 'Investimentos por quantidade', 't-qtd',
-       'Contagem: migradas + selecionadas + enquadradas (FIN)',
-       ['Qtd. FIN', 'Qtd. OGU', 'Total'], dense=True)}
+       'Contagem: migradas + novas seleções',
+       ['Qtd. FIN', 'Qtd. OGU', 'Total'], dense=True, status=True)}
 {slide('Por fonte', 'Investimento por fonte', 't-fonte',
-       'Contagem: migradas + selecionadas + enquadradas (FIN)',
-       ['Qtd. FIN', 'Qtd. OGU', 'Total', 'Valor OGU (R$ mi)', 'Valor FIN (R$ mi)', 'Valor total (R$ mi)'], dense=True)}
+       'Contagem: migradas + novas seleções',
+       ['Qtd. FIN', 'Qtd. OGU', 'Total', 'Valor OGU (R$ mi)', 'Valor FIN (R$ mi)', 'Valor total (R$ mi)'], dense=True, status=True)}
 {slide('Novo PAC Migrado', 'Novo PAC Migrado', 't-mig',
        'Contagem: somente carteira migrada',
        ['Qtd. FIN', 'Qtd. OGU', 'Valor FIN (R$ mi)', 'Valor OGU (R$ mi)'],
        dek='(Valores: Empenho de OGU e Pago de FIN) &gt; dez/2022')}
 {slide('Novas Seleções', 'Novas seleções', 't-novas',
-       'Contagem: selecionadas + enquadradas (FIN), sem migradas',
+       'Contagem: novas seleções, sem migradas',
        ['Qtd. FIN', 'Qtd. OGU', 'Valor FIN (R$ mi)', 'Valor OGU (R$ mi)'],
-       dek='2024, 2025 e 2026 (sem migradas)', dense=True)}
+       dek='2024, 2025 e 2026 (sem migradas)', dense=True, status=True)}
 {slide('Enquadradas', 'Novo PAC — propostas enquadradas', 't-enq',
        'Contagem: somente propostas enquadradas (FIN)',
        ['Qtd. FIN', 'Valor FIN (R$ mi)'])}
@@ -250,7 +266,7 @@ SLIDES = f"""
 """
 
 APP_JS = """
-// ===== dados e filtro por UF =====
+// ===== dados e filtros (UF e status) =====
 // linha: [modIdx, fonteIdx, uf, kind, gov, vlrOGU, vlrFIN]
 // fonte: 0=FIN 1=OGU 2=OGU/FIN · kind: 0=migrada 1=selecionada 2=enquadrada · gov: grupo Governadores
 const MODS = __MODS__;
@@ -268,22 +284,27 @@ const DATASETS = {
   gov:   (r) => r[4] === 1,
 };
 // colunas: qf/qo = contagem FIN/OGU · n = total (inclui OGU/FIN) · ogu/fin/tot = valores
+// status: true = a tabela soma selecionadas e enquadradas e obedece aos botões de status
 const TABLES = [
-  { id: 't-totais', ds: 'all',  cols: ['n', 'tot'] },
-  { id: 't-qtd',    ds: 'all',  cols: ['qf', 'qo', 'n'] },
-  { id: 't-fonte',  ds: 'all',  cols: ['qf', 'qo', 'n', 'ogu', 'fin', 'tot'] },
-  { id: 't-mig',    ds: 'mig',  cols: ['qf', 'qo', 'fin', 'ogu'] },
-  { id: 't-novas',  ds: 'plan', cols: ['qf', 'qo', 'fin', 'ogu'] },
-  { id: 't-enq',    ds: 'enq',  cols: ['qf', 'fin'] },
-  { id: 't-gov',    ds: 'gov',  cols: ['qf', 'qo', 'fin', 'ogu'] },
+  { id: 't-totais', ds: 'all',  status: true,  cols: ['n', 'tot'] },
+  { id: 't-qtd',    ds: 'all',  status: true,  cols: ['qf', 'qo', 'n'] },
+  { id: 't-fonte',  ds: 'all',  status: true,  cols: ['qf', 'qo', 'n', 'ogu', 'fin', 'tot'] },
+  { id: 't-mig',    ds: 'mig',  status: false, cols: ['qf', 'qo', 'fin', 'ogu'] },
+  { id: 't-novas',  ds: 'plan', status: true,  cols: ['qf', 'qo', 'fin', 'ogu'] },
+  { id: 't-enq',    ds: 'enq',  status: false, cols: ['qf', 'fin'] },
+  { id: 't-gov',    ds: 'gov',  status: false, cols: ['qf', 'qo', 'fin', 'ogu'] },
 ];
 
-function aggregate(ds, uf) {
-  const keep = DATASETS[ds];
+const state = { uf: '', sel: true, enq: true };
+const isSel = (r) => r[3] <= 1; // migradas (kind 0) contam como selecionadas
+
+function aggregate(t) {
+  const keep = DATASETS[t.ds];
   const acc = MODS.map(() => ({ qf: 0, qo: 0, n: 0, ogu: 0, fin: 0, tot: 0 }));
   for (const r of ROWS) {
     if (!keep(r)) continue;
-    if (uf && r[2] !== uf) continue;
+    if (state.uf && r[2] !== state.uf) continue;
+    if (t.status && !(isSel(r) ? state.sel : state.enq)) continue;
     const a = acc[r[0]];
     a.n += 1;
     if (r[1] === 0) a.qf += 1; else if (r[1] === 1) a.qo += 1;
@@ -297,9 +318,9 @@ function cell(col, a) {
   return '<td>' + v + '</td>';
 }
 
-function render(uf) {
+function render() {
   for (const t of TABLES) {
-    const acc = aggregate(t.ds, uf);
+    const acc = aggregate(t);
     const body = [];
     const total = { qf: 0, qo: 0, n: 0, ogu: 0, fin: 0, tot: 0 };
     acc.forEach((a, i) => {
@@ -315,17 +336,35 @@ function render(uf) {
       tb.innerHTML = body.join('');
     }
   }
-  const nome = uf || 'Brasil';
+  const nome = state.uf || 'Brasil';
+  const stname = state.sel && state.enq ? 'selecionadas + enquadradas'
+    : (state.sel ? 'somente selecionadas' : 'somente enquadradas');
   document.querySelectorAll('.ufname').forEach((el) => { el.textContent = nome; });
-  document.querySelectorAll('select.ufsel').forEach((el) => { el.value = uf; });
+  document.querySelectorAll('.stname').forEach((el) => { el.textContent = stname; });
+  document.querySelectorAll('select.ufsel').forEach((el) => { el.value = state.uf; });
+  document.querySelectorAll('.stbtn').forEach((el) => {
+    el.setAttribute('aria-pressed', String(state[el.dataset.st]));
+  });
 }
 
 (function () {
-  let uf = (new URLSearchParams(location.search).get('uf') || '').toUpperCase().trim();
+  const params = new URLSearchParams(location.search);
+  let uf = (params.get('uf') || '').toUpperCase().trim();
   if (uf && !ROWS.some((r) => r[2] === uf)) uf = '';
-  render(uf);
+  state.uf = uf;
+  const st = (params.get('status') || '').toLowerCase().trim();
+  if (st === 'sel') state.enq = false; else if (st === 'enq') state.sel = false;
+  render();
   document.querySelectorAll('select.ufsel').forEach((el) => {
-    el.addEventListener('change', function () { render(this.value); });
+    el.addEventListener('change', function () { state.uf = this.value; render(); });
+  });
+  document.querySelectorAll('.stbtn').forEach((el) => {
+    el.addEventListener('click', function () {
+      const k = this.dataset.st, other = k === 'sel' ? 'enq' : 'sel';
+      if (state[k] && !state[other]) return; // pelo menos um status ativo
+      state[k] = !state[k];
+      render();
+    });
   });
 })();
 """

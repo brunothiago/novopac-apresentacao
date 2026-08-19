@@ -13,6 +13,10 @@ barras proporcionais e dois slides extras (Calamidade RS e Seleções 2026), sem
 - **← / →** navegam entre os slides · **M** abre o menu de slides · **F** tela cheia · **R** volta ao início
 - **Seletor "Recorte"** (canto superior direito de cada tabela): filtra todas as tabelas por UF.
   Também é possível abrir direto num estado com `index.html?uf=SP`.
+- **Botões "Status"** (Selecionadas / Enquadradas): nas tabelas que somam os dois status
+  (totais, quantidade, fonte e novas seleções), ligam/desligam cada status na contagem.
+  Via URL: `index.html?status=sel` ou `?status=enq`. As tabelas de Migrado, Enquadradas e
+  Governadores já são recortes de status por natureza e não mudam.
 - **Imprimir / PDF**: Ctrl/Cmd+P gera um PDF com um slide por página, no recorte selecionado.
 
 Cada tabela traz a **data de atualização**, a **legenda do que entra na contagem**
@@ -35,13 +39,13 @@ Cada tabela traz a **data de atualização**, a **legenda do que entra na contag
 | Recorte | Fonte | Filtro |
 |---|---|---|
 | Migradas (557) | `data/view_sis_novopac_previsto_unificado_202608180817.csv` | `origem_dado == "Novo PAC - Retomada"` |
-| Seleções (2.865) | `data/base_completa_atualizada_20260818_1126.xlsx` (header na 2ª linha) | tudo (selecionadas + enquadradas) |
+| Seleções (2.863) | `data/base_completa_atualizada_20260818_1126.xlsx` (header na 2ª linha) | tudo (selecionadas + enquadradas), sem MCMV |
 
 - Convenção de totais (igual à apresentação original): **migradas + selecionadas + enquadradas FIN**.
 - 5 propostas de Mobilidade têm fonte OGU/FIN e contam apenas na coluna de total.
-- 1 proposta MCMV tem abrangência nacional (UF "BR"): conta no Brasil, não aparece no seletor de estados.
-- Rótulos: `Médias e Grandes Cidades` → "Mobilidade: Médias e Grandes Cidades";
-  `MCMV FNHIS`/`MCMV FNHIS SUB50` → "MCMV (Calamidade RS)".
+- As 2 propostas MCMV (`MCMV FNHIS` / `MCMV FNHIS SUB50`) ficam **fora da contagem** da
+  versão simples; a versão detalhada ainda as inclui (como "MCMV (Calamidade RS)").
+- Rótulo: `Médias e Grandes Cidades` → "Mobilidade: Médias e Grandes Cidades".
 
 ## Como atualizar os dados
 
