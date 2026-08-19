@@ -23,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 XLSX = f'{HERE}/data/base_completa_atualizada_20260818_1126.xlsx'
 CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
+PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
 
 LABELS = {
@@ -119,7 +120,10 @@ EXTRA_CSS = """
     transition:background .15s, border-color .15s; }
   .xlsxlink:hover{ background:rgba(255,255,255,.10); border-color:var(--amber-bright); }
   .xlsxlink svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  @media print{ .pdfbtn{ display:none !important; } }
+  @media print{ .xlsxlink, .rotate-hint{ display:none !important; } }
+  /* celular/tablet: navegação só por toque (metades esquerda/direita da tela);
+     a barra inferior sai para não cobrir o conteúdo dos slides */
+  @media (hover: none), (pointer: coarse){ .deck-bar-zone{ display:none !important; } }
 """
 
 HEAD = f"""<!DOCTYPE html>
@@ -269,10 +273,10 @@ SLIDES = f"""
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
       <span class="org" style="color:var(--paper);">Atualizado em {DATA_ATUALIZACAO}</span>
-      <button type="button" class="xlsxlink pdfbtn" onclick="window.print()" title="Gerar PDF da apresentação (um slide por página, no recorte selecionado)">
+      <a class="xlsxlink" href="{PDF_NAME}" download title="Baixar o PDF da apresentação (um slide por página)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3h9l5 5v13z"></path><path d="M14 3v6h6"></path></svg>
         Exportar PDF
-      </button>
+      </a>
       <a class="xlsxlink" href="data/{os.path.basename(XLSX)}" download title="Baixar a base de dados em Excel">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 19h16"></path></svg>
         XLSX Base
@@ -397,3 +401,22 @@ html = (HEAD + SLIDES
 
 open(OUT, 'w', encoding='utf-8').write(html)
 print('escrito:', OUT, f'({len(html)/1024:.0f} KB)')
+
+# ---------------- PDF pré-gerado (um slide por página, paisagem 1920×1080) ----------------
+# O Safari do iPhone ignora o @page do CSS de impressão; servir um PDF pronto garante o
+# formato correto e abre direto no visualizador do celular, com o botão de compartilhar.
+CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+pdf_out = f'{HERE}/{PDF_NAME}'
+if os.path.exists(CHROME):
+    import subprocess
+    r = subprocess.run(
+        [CHROME, '--headless=new', '--disable-gpu', '--virtual-time-budget=8000',
+         '--no-pdf-header-footer', f'--print-to-pdf={pdf_out}', f'file://{OUT}'],
+        capture_output=True, timeout=180)
+    if r.returncode == 0 and os.path.exists(pdf_out):
+        print('PDF gerado:', pdf_out, f'({os.path.getsize(pdf_out)//1024} KB)')
+    else:
+        print('AVISO: geração do PDF falhou (código', r.returncode, ') — link do slide ficará quebrado até regenerar')
+else:
+    aviso = 'mantido o PDF anterior' if os.path.exists(pdf_out) else 'PDF não gerado; link ficará quebrado'
+    print(f'AVISO: Chrome não encontrado — {aviso}')

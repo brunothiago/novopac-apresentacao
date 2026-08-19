@@ -17,7 +17,11 @@ barras proporcionais e dois slides extras (Calamidade RS e Seleções 2026), sem
   (totais, quantidade, fonte e novas seleções), ligam/desligam cada status na contagem.
   Via URL: `index.html?status=sel` ou `?status=enq`. As tabelas de Migrado, Enquadradas e
   Governadores já são recortes de status por natureza e não mudam.
-- **Imprimir / PDF**: Ctrl/Cmd+P gera um PDF com um slide por página, no recorte selecionado.
+- **Exportar PDF** (slide final): baixa `novopac-mcid-investimentos.pdf`, pré-gerado no build
+  (um slide por página, paisagem 16:9) — no celular abre direto no visualizador com o botão
+  de compartilhar. Ctrl/Cmd+P no desktop também funciona, no recorte selecionado.
+- **No celular/tablet**: navegação por toque nas metades esquerda/direita da tela;
+  a barra de controles inferior fica oculta para não cobrir o conteúdo.
 
 Cada tabela traz a **data de atualização**, a **legenda do que entra na contagem**
 (migradas, selecionadas e/ou enquadradas) e o **recorte** ativo.
@@ -50,7 +54,8 @@ Cada tabela traz a **data de atualização**, a **legenda do que entra na contag
 ## Como atualizar os dados
 
 1. Substitua os arquivos em `data/` pelas novas extrações (ajuste os nomes/data em `build.py`).
-2. Rode `python3 build.py` (requer `pandas` e `openpyxl`).
+2. Rode `python3 build.py` (requer `pandas` e `openpyxl`; com o Google Chrome instalado,
+   o PDF `novopac-mcid-investimentos.pdf` é regenerado automaticamente no mesmo passo).
 3. O `index.html` é regenerado com os dados embutidos — as tabelas são recalculadas
    no navegador a partir das propostas individuais, por isso o filtro de UF funciona offline.
 
