@@ -25,7 +25,11 @@ CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
-VERSAO = '1.3'  # subir a cada commit que altere a apresentação
+VERSAO = '1.4'  # subir a cada commit que altere a apresentação
+# FIRECE — financiamento da mesma temática FORA do escopo do Novo PAC.
+# Valor fixo: atualizar somente quando o usuário indicar (e subir a VERSAO).
+FIRECE_VALOR = 'R$ 34 bi'
+FIRECE_DESC = 'Reconstrução e adaptação após os eventos extremos no RS.'
 # anos de exibição (somente rótulo — nos dados, ano_selecao segue o ano da portaria)
 ANO_LABEL = {2024: '2023', 2025: '2024', 2026: '2026'}
 
@@ -140,6 +144,13 @@ EXTRA_CSS = """
   .fsbtn:active{ background:rgba(19,81,180,.75); }
   @media (hover: none), (pointer: coarse){ .fsbtn{ display:flex; } }
   @media print{ .fsbtn{ display:none !important; } }
+  /* painel de financiamento fora do escopo do Novo PAC (FIRECE) */
+  .aside-fin{ margin-top:38px; background:var(--paper-2); border-left:5px solid var(--green); padding:24px 32px; }
+  .af-label{ font-size:19px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:12px; }
+  .af-row{ display:flex; align-items:baseline; gap:26px; flex-wrap:wrap; }
+  .af-name{ font-size:33px; font-weight:800; color:var(--ink); letter-spacing:-.01em; }
+  .af-val{ font-size:44px; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
+  .af-desc{ font-size:24px; color:var(--ink-soft); }
   /* versão da apresentação (rodapés) */
   .ver{ font-size:18px; font-weight:600; letter-spacing:.06em; opacity:.72; margin-left:14px; white-space:nowrap; }
   /* link de fonte dos dados (encerramento) */
@@ -186,7 +197,7 @@ FOOT = f"""    <hr class="hr">
 """
 
 
-def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False, status=False):
+def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False, status=False, extra=''):
     ths = ''.join(f'<th>{c}</th>' for c in colunas)
     dek_html = f'\n        <p class="dek" style="max-width:80ch; font-style:italic;">{dek}</p>' if dek else ''
     stctl = ('\n          <div class="stctl"><label>Status</label><div class="stgrp">'
@@ -213,7 +224,7 @@ def slide(label, titulo, tabela_id, legenda, colunas, dek='', dense=False, statu
         <table class="data{' dense' if dense else ''}" id="{tabela_id}">
           <thead><tr><th>Modalidade</th>{ths}</tr></thead>
           <tbody></tbody>
-        </table>
+        </table>{extra}
       </div>
     </div>
 {FOOT}  </section>
@@ -288,7 +299,16 @@ SLIDES = f"""
 {slide('Prevenção a Desastres', 'Prevenção a Desastres', 't-prev',
        'Contagem: migradas + novas seleções — subeixo Prevenção a Desastres',
        ['Qtd. FIN', 'Qtd. OGU', 'Total', 'Valor OGU (R$ mi)', 'Valor FIN (R$ mi)', 'Valor total (R$ mi)'],
-       dek='Drenagem Urbana e Contenção de Encostas, por fonte', status=True)}
+       dek='Drenagem Urbana e Contenção de Encostas, por fonte', status=True,
+       extra=f'''
+        <div class="aside-fin">
+          <div class="af-label">Fora do escopo do Novo PAC</div>
+          <div class="af-row">
+            <span class="af-name">FIRECE</span>
+            <span class="af-val">{FIRECE_VALOR}</span>
+            <span class="af-desc">{FIRECE_DESC}</span>
+          </div>
+        </div>''')}
 {slide('Governadores', 'Governadores', 't-gov',
        'Contagem: seleções do grupo Governadores',
        ['Qtd. FIN', 'Qtd. OGU', 'Valor FIN (R$ mi)', 'Valor OGU (R$ mi)'])}
