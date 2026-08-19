@@ -1,3 +1,12 @@
 .DS_Store
 __pycache__/
 *.pyc
+
+# credenciais e arquivos de conexão — NUNCA commitar (repositório público)
+.env
+*.env
+python/config.env
+
+# temporários do Excel
+~$*
+data/~$*
