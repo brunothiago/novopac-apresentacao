@@ -124,13 +124,28 @@ EXTRA_CSS = """
   /* celular/tablet: navegação só por toque (metades esquerda/direita da tela);
      a barra inferior sai para não cobrir o conteúdo dos slides */
   @media (hover: none), (pointer: coarse){ .deck-bar-zone{ display:none !important; } }
+  /* botão flutuante de tela cheia — só em telas de toque */
+  .fsbtn{ display:none; position:fixed; z-index:2147483000;
+    right:max(16px, env(safe-area-inset-right)); bottom:max(16px, env(safe-area-inset-bottom));
+    width:54px; height:54px; border-radius:50%; border:1px solid rgba(255,255,255,.28);
+    background:rgba(7,29,65,.55); backdrop-filter:blur(8px); cursor:pointer;
+    align-items:center; justify-content:center; padding:0; }
+  .fsbtn svg{ width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .fsbtn:active{ background:rgba(19,81,180,.75); }
+  @media (hover: none), (pointer: coarse){ .fsbtn{ display:flex; } }
+  @media print{ .fsbtn{ display:none !important; } }
 """
 
 HEAD = f"""<!DOCTYPE html>
 <html lang="pt-BR"><head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Novo PAC — MCid · Investimentos</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Novo PAC">
+<meta name="theme-color" content="#071D41">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <!-- Tipografia oficial do Governo Federal (Padrão Digital de Governo — gov.br/ds) -->
@@ -285,6 +300,32 @@ SLIDES = f"""
   </section>
 
 </deck-stage>
+
+<!-- tela cheia no toque (iPhone/iPad): esconde a interface do navegador -->
+<button type="button" class="fsbtn" id="fsBtn" aria-label="Tela cheia" title="Tela cheia">
+  <svg id="fsBtnIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"></path></svg>
+</button>
+<script>
+(function () {{
+  var b = document.getElementById('fsBtn');
+  var ico = document.getElementById('fsBtnIco');
+  var el = document.documentElement;
+  var req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (!req) {{ b.style.display = 'none'; return; }}
+  function fsEl() {{ return document.fullscreenElement || document.webkitFullscreenElement; }}
+  function sync() {{
+    ico.innerHTML = fsEl()
+      ? '<path d="M9 4v3a2 2 0 0 1-2 2H4M20 9h-3a2 2 0 0 1-2-2V4M9 20v-3a2 2 0 0 0-2-2H4M15 20v-3a2 2 0 0 1 2-2h3"/>'
+      : '<path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"/>';
+  }}
+  b.addEventListener('click', function () {{
+    if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else req.call(el);
+  }});
+  document.addEventListener('fullscreenchange', sync);
+  document.addEventListener('webkitfullscreenchange', sync);
+}})();
+</script>
 """
 
 APP_JS = """

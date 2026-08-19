@@ -21,7 +21,10 @@ barras proporcionais e dois slides extras (Calamidade RS e Seleções 2026), sem
   (um slide por página, paisagem 16:9) — no celular abre direto no visualizador com o botão
   de compartilhar. Ctrl/Cmd+P no desktop também funciona, no recorte selecionado.
 - **No celular/tablet**: navegação por toque nas metades esquerda/direita da tela;
-  a barra de controles inferior fica oculta para não cobrir o conteúdo.
+  a barra de controles inferior fica oculta para não cobrir o conteúdo. O botão redondo
+  no canto inferior direito entra em **tela cheia** (esconde a interface do Safari;
+  iOS 16.4+). Para uma experiência de app sem nenhuma barra, use
+  Compartilhar → **Adicionar à Tela de Início** e abra pelo ícone.
 
 Cada tabela traz a **data de atualização**, a **legenda do que entra na contagem**
 (migradas, selecionadas e/ou enquadradas) e o **recorte** ativo.
