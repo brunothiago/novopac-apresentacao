@@ -25,7 +25,7 @@ CSV = f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv'
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
 DATA_ATUALIZACAO = '18/08/2026'
-VERSAO = '1.2'  # subir a cada commit que altere a apresentação
+VERSAO = '1.3'  # subir a cada commit que altere a apresentação
 # anos de exibição (somente rótulo — nos dados, ano_selecao segue o ano da portaria)
 ANO_LABEL = {2024: '2023', 2025: '2024', 2026: '2026'}
 
@@ -285,6 +285,10 @@ SLIDES = f"""
 {slide('Enquadradas', 'Novo PAC — propostas enquadradas', 't-enq',
        'Contagem: somente propostas enquadradas (FIN)',
        ['Qtd. FIN', 'Valor FIN (R$ mi)'])}
+{slide('Prevenção a Desastres', 'Prevenção a Desastres', 't-prev',
+       'Contagem: migradas + novas seleções — subeixo Prevenção a Desastres',
+       ['Qtd. FIN', 'Qtd. OGU', 'Total', 'Valor OGU (R$ mi)', 'Valor FIN (R$ mi)', 'Valor total (R$ mi)'],
+       dek='Drenagem Urbana e Contenção de Encostas, por fonte', status=True)}
 {slide('Governadores', 'Governadores', 't-gov',
        'Contagem: seleções do grupo Governadores',
        ['Qtd. FIN', 'Qtd. OGU', 'Valor FIN (R$ mi)', 'Valor OGU (R$ mi)'])}
@@ -382,6 +386,9 @@ const TABLES = [
   { id: 't-mig',    ds: 'mig',  status: false, cols: ['qf', 'qo', 'fin', 'ogu'] },
   { id: 't-novas',  ds: 'plan', status: true,  cols: ['qf', 'qo', 'fin', 'ogu'] },
   { id: 't-enq',    ds: 'enq',  status: false, cols: ['qf', 'fin'] },
+  { id: 't-prev',   ds: 'all',  status: true,
+    mods: [MODS.indexOf('Drenagem Urbana'), MODS.indexOf('Contenção de Encostas')],
+    cols: ['qf', 'qo', 'n', 'ogu', 'fin', 'tot'] },
   { id: 't-gov',    ds: 'gov',  status: false, cols: ['qf', 'qo', 'fin', 'ogu'] },
 ];
 
@@ -395,6 +402,7 @@ function aggregate(t) {
   for (const r of ROWS) {
     if (!keep(r)) continue;
     if (state.uf && r[2] !== state.uf) continue;
+    if (t.mods && t.mods.indexOf(r[0]) < 0) continue;
     if (t.status && !(isSel(r) ? state.sel : state.enq)) continue;
     if (t.status && r[7] && !state.anos[r[7]]) continue;
     const a = acc[r[0]];
