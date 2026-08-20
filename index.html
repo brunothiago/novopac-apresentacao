@@ -855,6 +855,7 @@
   /* painel de financiamento fora do escopo do Novo PAC (FIRECE) */
   .aside-fin{ margin-top:38px; background:var(--paper-2); border-left:5px solid var(--green); padding:24px 32px; }
   .af-label{ font-size:19px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:12px; }
+  .af-plus{ font-size:32px; font-weight:800; color:var(--green); vertical-align:-3px; margin-right:2px; }
   .af-row{ display:flex; align-items:baseline; gap:26px; flex-wrap:wrap; }
   .af-name{ font-size:33px; font-weight:800; color:var(--ink); letter-spacing:-.01em; }
   .af-val{ font-size:44px; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
@@ -863,6 +864,12 @@
   .af-link:hover{ opacity:.8; }
   /* versão da apresentação (rodapés) */
   .ver{ font-size:18px; font-weight:600; letter-spacing:.06em; opacity:.72; margin-left:14px; white-space:nowrap; }
+  /* chamada com seta apontando para o link de fonte dos dados (encerramento) */
+  .srchint{ display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+  .srchint-txt{ font-family:'Raleway',sans-serif; font-style:italic; font-weight:600; font-size:26px; color:var(--amber-bright); }
+  .srchint-arrow{ width:34px; height:34px; flex:none; fill:none; stroke:var(--amber-bright); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; animation:srchint-bounce 1.4s ease-in-out infinite; }
+  @keyframes srchint-bounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(8px); } }
+  @media print{ .srchint-arrow{ animation:none; } }
   /* link de fonte dos dados (encerramento) */
   .srclink{ display:inline-flex; align-items:center; gap:16px; font-size:29px; font-weight:600;
     color:#fff; text-decoration:none; border:1px solid rgba(255,255,255,.32); border-radius:2px;
@@ -913,7 +920,7 @@
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="ver">versão 1.6</span></span>
+      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -946,7 +953,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -979,7 +986,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1012,7 +1019,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1044,7 +1051,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1078,7 +1085,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1109,7 +1116,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1139,7 +1146,7 @@
           <tbody></tbody>
         </table>
         <div class="aside-fin">
-          <div class="af-label">+ Investimento de Prevenção a Desastres</div>
+          <div class="af-label"><span class="af-plus">+</span> Investimento de Prevenção a Desastres</div>
           <div class="af-row">
             <span class="af-name">FIRECE</span>
             <span class="af-val">R$ 6,5 bi</span>
@@ -1151,7 +1158,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1182,7 +1189,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.6</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.8</span></span>
     </div>
   </section>
 
@@ -1198,6 +1205,10 @@
       <h2 style="font-size:120px; font-weight:800; letter-spacing:-.03em; margin:0; line-height:.95;">Obrigado.</h2>
       <p style="font-family:'Raleway',sans-serif; font-style:italic; font-weight:500; font-size:38px; line-height:1.42; color:var(--paper); margin:100px 0 0; max-width:42ch;">Novo PAC — Ministério das Cidades.</p>
       <div style="margin-top:90px;">
+        <div class="srchint">
+          <span class="srchint-txt">Acesse a fonte dos dados no clique abaixo</span>
+          <svg class="srchint-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14"></path><path d="M6 12l6 6 6-6"></path></svg>
+        </div>
         <div class="label" style="color:var(--amber-bright); margin-bottom:20px;">Fonte dos dados</div>
         <a class="srclink" href="https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/pac/selecoes-novo-pac/investimentos-selecionados" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M20 4 10 14"></path><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"></path></svg>
@@ -1210,7 +1221,7 @@
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="ver">versão 1.6</span></span>
+      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="ver">versão 1.8</span></span>
       <a class="xlsxlink" href="novopac-mcid-investimentos.pdf" download title="Baixar o PDF da apresentação (um slide por página)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3h9l5 5v13z"></path><path d="M14 3v6h6"></path></svg>
         Exportar PDF
