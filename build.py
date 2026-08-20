@@ -415,6 +415,7 @@ const TABLES = [
 const state = { uf: '', sel: true, enq: true, anos: {} };
 ANOS.forEach((a) => { state.anos[a] = true; });
 const isSel = (r) => r[3] <= 1; // migradas (kind 0) contam como selecionadas
+const anoFiltrado = () => ANOS.some((a) => !state.anos[a]); // algum ano desligado
 
 function aggregate(t) {
   const keep = DATASETS[t.ds];
@@ -424,7 +425,8 @@ function aggregate(t) {
     if (state.uf && r[2] !== state.uf) continue;
     if (t.mods && t.mods.indexOf(r[0]) < 0) continue;
     if (t.status && !(isSel(r) ? state.sel : state.enq)) continue;
-    if (t.status && r[7] && !state.anos[r[7]]) continue;
+    // com recorte de ano ativo, as migradas (sem ano de seleção) também saem da conta
+    if (t.status && anoFiltrado() && !state.anos[r[7]]) continue;
     const a = acc[r[0]];
     a.n += 1;
     if (r[1] === 0) a.qf += 1; else if (r[1] === 1) a.qo += 1;
@@ -460,7 +462,7 @@ function render() {
   const stname = state.sel && state.enq ? 'selecionadas + enquadradas'
     : (state.sel ? 'somente selecionadas' : 'somente enquadradas');
   const anosOn = ANOS.filter((a) => state.anos[a]);
-  const anoname = anosOn.length === ANOS.length ? 'todos' : anosOn.join(' + ');
+  const anoname = anosOn.length === ANOS.length ? 'todos' : anosOn.join(' + ') + ' (sem migradas)';
   document.querySelectorAll('.ufname').forEach((el) => { el.textContent = nome; });
   document.querySelectorAll('.stname').forEach((el) => { el.textContent = stname; });
   document.querySelectorAll('.anoname').forEach((el) => { el.textContent = anoname; });
