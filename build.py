@@ -31,7 +31,7 @@ VERSAO = '1.5'  # subir a cada commit que altere a apresentação
 FIRECE_VALOR = 'R$ 34 bi'
 FIRECE_DESC = 'Reconstrução e adaptação após os eventos extremos no RS.'
 # anos de exibição (somente rótulo — nos dados, ano_selecao segue o ano da portaria)
-ANO_LABEL = {2024: '2023', 2025: '2024', 2026: '2026'}
+ANO_LABEL = {2024: '2023', 2025: '2025', 2026: '2026'}
 
 LABELS = {
     'Médias e Grandes Cidades': 'Mobilidade: Médias e Grandes Cidades',
@@ -292,7 +292,7 @@ SLIDES = f"""
 {slide('Novas Seleções', 'Novas seleções', 't-novas',
        'Contagem: novas seleções, sem migradas',
        ['Qtd. FIN', 'Qtd. OGU', 'Valor FIN (R$ mi)', 'Valor OGU (R$ mi)'],
-       dek='2023, 2024 e 2026 (sem migradas)', dense=True, status=True)}
+       dek='2023, 2025 e 2026 (sem migradas)', dense=True, status=True)}
 {slide('Enquadradas', 'Novo PAC — propostas enquadradas', 't-enq',
        'Contagem: somente propostas enquadradas (FIN)',
        ['Qtd. FIN', 'Valor FIN (R$ mi)'])}
