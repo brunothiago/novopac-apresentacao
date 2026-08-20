@@ -826,6 +826,9 @@
   .stbtn + .stbtn{ border-left:1px solid var(--line-strong); }
   .stbtn[aria-pressed="true"]{ background:var(--blue); color:#fff; }
   .stbtn:focus-visible{ outline:2px solid var(--blue); outline-offset:-2px; }
+  /* botão de status com rótulo em duas linhas (Enquadradas/ + habilitadas) */
+  .stbtn.st2{ padding-top:4px; padding-bottom:4px; line-height:1.08; }
+  .stbtn .stsub{ display:block; }
   .title-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px; }
   .title-row .title-block{ margin-bottom:0; }
   @media print{ .ufctl select{ border:0; padding:0; } }
@@ -924,13 +927,13 @@
     <div class="body" style="justify-content:center; padding-top:0;">
       <div class="label" style="color:var(--amber-bright); margin-bottom:30px;">Investimentos</div>
       <h1 style="font-size:150px; font-weight:800; line-height:.98; letter-spacing:-.03em; margin:0; max-width:20ch;">Novo PAC<span style="color:var(--blue-soft); font-weight:500;"> — MCid</span></h1>
-      <p style="font-family:'Raleway',sans-serif; font-style:italic; font-weight:500; font-size:38px; line-height:1.4; color:var(--paper); margin:190px 0 0; max-width:44ch;">Balanço da carteira de seleções — migradas, novas seleções e propostas enquadradas.</p>
+      <p style="font-family:'Raleway',sans-serif; font-style:italic; font-weight:500; font-size:38px; line-height:1.4; color:var(--paper); margin:190px 0 0; max-width:44ch;">Balanço da carteira de seleções — migradas, novas seleções e propostas enquadradas/habilitadas.</p>
     </div>
     <hr class="hr">
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades - DMP/SE</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="ver">versão 1.11</span></span>
+      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -948,12 +951,12 @@
         </div>
         <div class="ctrls">
           <div class="ufctl"><label for="t-totais-uf">Recorte</label><select id="t-totais-uf" class="ufsel"><option value="">Brasil — todas as UFs</option><option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option><option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option></select></div>
-          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button></div></div>
+          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn st2" data-st="enq" aria-pressed="true">Enquadradas/<span class="stsub">habilitadas</span></button></div></div>
           <div class="stctl anoctl"><label>Ano</label><div class="stgrp"><button type="button" class="stbtn anobtn" data-ano="2023" aria-pressed="true">2023</button><button type="button" class="stbtn anobtn" data-ano="2025" aria-pressed="true">2025</button><button type="button" class="stbtn anobtn" data-ano="2026" aria-pressed="true">2026</button></div></div>
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas/habilitadas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data dense" id="t-totais">
           <thead><tr><th>Modalidade</th><th>Total de propostas</th><th>Valor total (R$ mi)</th></tr></thead>
           <tbody></tbody>
@@ -963,7 +966,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -981,12 +984,12 @@
         </div>
         <div class="ctrls">
           <div class="ufctl"><label for="t-qtd-uf">Recorte</label><select id="t-qtd-uf" class="ufsel"><option value="">Brasil — todas as UFs</option><option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option><option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option></select></div>
-          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button></div></div>
+          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn st2" data-st="enq" aria-pressed="true">Enquadradas/<span class="stsub">habilitadas</span></button></div></div>
           <div class="stctl anoctl"><label>Ano</label><div class="stgrp"><button type="button" class="stbtn anobtn" data-ano="2023" aria-pressed="true">2023</button><button type="button" class="stbtn anobtn" data-ano="2025" aria-pressed="true">2025</button><button type="button" class="stbtn anobtn" data-ano="2026" aria-pressed="true">2026</button></div></div>
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas/habilitadas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data dense" id="t-qtd">
           <thead><tr><th>Modalidade</th><th>Qtd. FIN</th><th>Qtd. OGU</th><th>Total</th></tr></thead>
           <tbody></tbody>
@@ -996,7 +999,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -1014,12 +1017,12 @@
         </div>
         <div class="ctrls">
           <div class="ufctl"><label for="t-fonte-uf">Recorte</label><select id="t-fonte-uf" class="ufsel"><option value="">Brasil — todas as UFs</option><option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option><option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option></select></div>
-          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button></div></div>
+          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn st2" data-st="enq" aria-pressed="true">Enquadradas/<span class="stsub">habilitadas</span></button></div></div>
           <div class="stctl anoctl"><label>Ano</label><div class="stgrp"><button type="button" class="stbtn anobtn" data-ano="2023" aria-pressed="true">2023</button><button type="button" class="stbtn anobtn" data-ano="2025" aria-pressed="true">2025</button><button type="button" class="stbtn anobtn" data-ano="2026" aria-pressed="true">2026</button></div></div>
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas/habilitadas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data dense" id="t-fonte">
           <thead><tr><th>Modalidade</th><th>Qtd. FIN</th><th>Qtd. OGU</th><th>Total</th><th>Valor OGU (R$ mi)</th><th>Valor FIN (R$ mi)</th><th>Valor total (R$ mi)</th></tr></thead>
           <tbody></tbody>
@@ -1029,7 +1032,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -1061,7 +1064,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -1080,12 +1083,12 @@
         </div>
         <div class="ctrls">
           <div class="ufctl"><label for="t-novas-uf">Recorte</label><select id="t-novas-uf" class="ufsel"><option value="">Brasil — todas as UFs</option><option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option><option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option></select></div>
-          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button></div></div>
+          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn st2" data-st="enq" aria-pressed="true">Enquadradas/<span class="stsub">habilitadas</span></button></div></div>
           <div class="stctl anoctl"><label>Ano</label><div class="stgrp"><button type="button" class="stbtn anobtn" data-ano="2023" aria-pressed="true">2023</button><button type="button" class="stbtn anobtn" data-ano="2025" aria-pressed="true">2025</button><button type="button" class="stbtn anobtn" data-ano="2026" aria-pressed="true">2026</button></div></div>
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: novas seleções, sem migradas<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: novas seleções, sem migradas<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas/habilitadas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data dense" id="t-novas">
           <thead><tr><th>Modalidade</th><th>Qtd. FIN</th><th>Qtd. OGU</th><th>Valor FIN (R$ mi)</th><th>Valor OGU (R$ mi)</th></tr></thead>
           <tbody></tbody>
@@ -1095,28 +1098,28 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
 
-  <section class="p2 content" data-label="Enquadradas">
+  <section class="p2 content" data-label="Enquadradas/Habilitadas">
     <div class="top">
       <div class="eyebrow">Novo PAC — MCid · Investimentos</div>
       <div class="brand"><span class="govbr">gov<b>.br</b></span><span class="div"></span><span class="min">Ministério das Cidades - DMP/SE</span></div>
     </div>
     <hr class="hr">
     <div class="body tight">
-      <div class="title-row">
+      <div class="title-row" style="flex-direction:column; align-items:stretch; gap:16px;">
         <div class="title-block tight">
-          <h2 class="title">Novo PAC — propostas enquadradas</h2>
+          <h2 class="title">Novo PAC — propostas enquadradas/habilitadas</h2>
         </div>
-        <div class="ctrls">
+        <div class="ctrls" style="align-self:flex-end;">
           <div class="ufctl"><label for="t-enq-uf">Recorte</label><select id="t-enq-uf" class="ufsel"><option value="">Brasil — todas as UFs</option><option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option><option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option></select></div>
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: somente propostas enquadradas (FIN)<span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: somente propostas enquadradas/habilitadas (FIN)<span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data" id="t-enq">
           <thead><tr><th>Modalidade</th><th>Qtd. FIN</th><th>Valor FIN (R$ mi)</th></tr></thead>
           <tbody></tbody>
@@ -1126,7 +1129,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -1145,12 +1148,12 @@
         </div>
         <div class="ctrls">
           <div class="ufctl"><label for="t-prev-uf">Recorte</label><select id="t-prev-uf" class="ufsel"><option value="">Brasil — todas as UFs</option><option value="AC">AC</option><option value="AL">AL</option><option value="AM">AM</option><option value="AP">AP</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option><option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option><option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option><option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option></select></div>
-          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn" data-st="enq" aria-pressed="true">Enquadradas</button></div></div>
+          <div class="stctl"><label>Status</label><div class="stgrp"><button type="button" class="stbtn" data-st="sel" aria-pressed="true">Selecionadas</button><button type="button" class="stbtn st2" data-st="enq" aria-pressed="true">Enquadradas/<span class="stsub">habilitadas</span></button></div></div>
           <div class="stctl anoctl"><label>Ano</label><div class="stgrp"><button type="button" class="stbtn anobtn" data-ano="2023" aria-pressed="true">2023</button><button type="button" class="stbtn anobtn" data-ano="2025" aria-pressed="true">2025</button><button type="button" class="stbtn anobtn" data-ano="2026" aria-pressed="true">2026</button></div></div>
         </div>
       </div>
       <div class="col grow" style="justify-content:center;">
-        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções — subeixo Prevenção a Desastres<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
+        <p class="tmeta">Atualizado em <b>18/08/2026</b><span class="sep">·</span>Contagem: migradas + novas seleções — subeixo Prevenção a Desastres<span class="sep">·</span>Status: <b class="stname">selecionadas + enquadradas/habilitadas</b><span class="sep">·</span>Anos: <b class="anoname">todos</b><span class="sep">·</span>Recorte: <b class="ufname">Brasil</b></p>
         <table class="data" id="t-prev">
           <thead><tr><th>Modalidade</th><th>Qtd. FIN</th><th>Qtd. OGU</th><th>Total</th><th>Valor OGU (R$ mi)</th><th>Valor FIN (R$ mi)</th><th>Valor total (R$ mi)</th></tr></thead>
           <tbody></tbody>
@@ -1168,7 +1171,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -1199,7 +1202,7 @@
     <hr class="hr">
     <div class="bot">
       <span class="org">Fonte: MCid · Portarias de seleção do Novo PAC · atualizado em 18/08/2026</span>
-      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.11</span></span>
+      <span style="display:inline-flex; align-items:baseline;"><span class="pageno"></span><span class="ver">versão 1.12</span></span>
     </div>
   </section>
 
@@ -1231,10 +1234,11 @@
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades - DMP/SE</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="verwrap"><button type="button" class="ver verlink" id="verBtn" aria-haspopup="dialog" aria-expanded="false" title="Ver histórico de atualizações">versão 1.11</button>
+      <span class="org" style="color:var(--paper);">Atualizado em 18/08/2026<span class="verwrap"><button type="button" class="ver verlink" id="verBtn" aria-haspopup="dialog" aria-expanded="false" title="Ver histórico de atualizações">versão 1.12</button>
         <div class="verlog" id="verLog" role="dialog" aria-label="Histórico de atualizações" hidden>
           <h3>Atualizações da apresentação</h3>
           <ul>
+            <li><b>1.12</b>Status "Enquadradas/habilitadas" e ajuste do slide 7.</li>
             <li><b>1.11</b>Recorte por ano corrigido: 2023, 2025 e 2026.</li>
             <li><b>1.10</b>Histórico de versões no rodapé.</li>
             <li><b>1.9</b>Rótulos com "DMP/SE" nos slides.</li>
@@ -3158,8 +3162,8 @@ function render() {
     }
   }
   const nome = state.uf || 'Brasil';
-  const stname = state.sel && state.enq ? 'selecionadas + enquadradas'
-    : (state.sel ? 'somente selecionadas' : 'somente enquadradas');
+  const stname = state.sel && state.enq ? 'selecionadas + enquadradas/habilitadas'
+    : (state.sel ? 'somente selecionadas' : 'somente enquadradas/habilitadas');
   const anosOn = ANOS.filter((a) => state.anos[a]);
   const anoname = anosOn.length === ANOS.length ? 'todos' : anosOn.join(' + ');
   document.querySelectorAll('.ufname').forEach((el) => { el.textContent = nome; });
