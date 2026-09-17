@@ -13,3 +13,6 @@ data/~$*
 
 # arquivos operacionais de atualização do banco (não publicar)
 atualizacao_banco_*.xlsx
+
+# relatórios antes × depois (entregues à parte)
+relatorio_antes_depois_*

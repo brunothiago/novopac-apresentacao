@@ -2,13 +2,15 @@
 """Gera versao-detalhada.html — deck com painéis de destaque, barras proporcionais e
 slides extras (Calamidade RS e Seleções 2026), sem filtro de UF.
 
-Fontes de dados (única fonte de verdade — números computados aqui, nunca transcritos):
-- data/base_completa_atualizada_20260818_1126.xlsx (seleções 2024-2026)
-- data/view_sis_novopac_previsto_unificado_202608180817.csv (migradas)
+Fonte de dados (única fonte de verdade — números computados aqui, nunca transcritos):
+foto de se_cgpac.tab_base_unica_gm em data/base_unica_gm_<AAAAMMDD>.xlsx — ver dados.py
+(migradas = status "retomada"; seleções 2024-2026 = "selecionada" + "enquadrada").
 Convenção da apresentação antiga: totais = migradas + selecionadas + enquadradas FIN.
 """
 import os
 import pandas as pd
+
+import dados
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = f'{HERE}/versao-detalhada.html'
@@ -38,14 +40,10 @@ def ptint(v):
 
 
 def load():
-    x = pd.read_excel(f'{HERE}/data/base_completa_atualizada_20260818_1126.xlsx', header=1)
-    v = pd.read_csv(f'{HERE}/data/view_sis_novopac_previsto_unificado_202608180817.csv')
-    mig = v[v.origem_dado == 'Novo PAC - Retomada'].copy()
+    x, mig, data, _ = dados.load()
     for d in (x, mig):
-        for c in VAL:
-            d[c] = pd.to_numeric(d[c], errors='coerce').fillna(0)
         d['mod'] = d.modalidade.replace(LABELS)
-    return x, mig
+    return x, mig, data
 
 
 def agg(d):
@@ -61,7 +59,11 @@ def agg(d):
     return g
 
 
-x, mig = load()
+x, mig, DATA = load()
+MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto',
+         'setembro', 'outubro', 'novembro', 'dezembro']
+_, _mes, _ano = DATA.split('/')
+MES_ANO = f'{MESES[int(_mes) - 1].capitalize()} de {_ano}'  # rodapé da capa e do encerramento
 tot = agg(pd.concat([x[['mod', 'fonte'] + VAL], mig[['mod', 'fonte'] + VAL]]))
 migr = agg(mig)
 novas = agg(x)
@@ -154,7 +156,7 @@ rows_s8 = '\n'.join(row_4col(gov, m) for m in gov.index)
 tr_s8 = (f'<tr class="tot"><td>TOTAL</td><td>{ptint(T(gov,"qFIN"))}</td><td>{ptint(T(gov,"qOGU"))}</td>'
          f'<td>{ptbr(T(gov,"fin"))}</td><td>{ptbr(T(gov,"ogu"))}</td></tr>')
 
-# slide 10 — 2026 (tudo FIN): modalidade | selecionadas | enquadradas | valor | barra sel/enq
+# slide 10 — 2026: modalidade | selecionadas | enquadradas | valor | barra sel/enq
 max26 = a26.n.max()
 rows_s10 = []
 for m in a26.index:
@@ -188,6 +190,11 @@ N_ENQ, V_ENQ_BI = ptint(T(enq, 'n')), ptbr(T(enq, 'fin') / 1000, 1)
 N_GOV, V_GOV_BI = ptint(T(gov, 'n')), ptbr(T(gov, 'tot') / 1000, 1)
 N_CAL, V_CAL = ptint(T(cal, 'n')), ptbr(T(cal, 'tot'))
 N_26, V_26_BI = ptint(T(a26, 'n')), ptbr(T(a26, 'tot') / 1000, 1)
+# 2026 era todo FIN; com OGU na carteira, o painel passa a dizer 'valor total'
+SO_FIN_26 = T(a26, 'qOGU') == 0
+DEK_26 = ('Propostas que entraram na carteira em 2026 — todas via financiamento.' if SO_FIN_26
+          else 'Propostas que entraram na carteira em 2026 — OGU e financiamento.')
+LBL_V26 = 'Valor FIN' if SO_FIN_26 else 'Valor total'
 cal_dre = cal.loc['Drenagem Urbana']
 cal_mcmv = cal.loc['MCMV (Calamidade RS)']
 
@@ -268,7 +275,7 @@ CHROME_TOP = """    <div class="top">
 """
 
 
-def foot(src='Fonte: MCid · Portarias de seleção do Novo PAC · dados de 18/08/2026'):
+def foot(src=f'Fonte: MCid · Portarias de seleção do Novo PAC · dados de {DATA}'):
     return f"""    <hr class="hr">
     <div class="bot">
       <span class="org">{src}</span>
@@ -324,7 +331,7 @@ SLIDES = f"""
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Agosto de 2026</span>
+      <span class="org" style="color:var(--paper);">{MES_ANO}</span>
     </div>
   </section>
 
@@ -377,7 +384,7 @@ SLIDES = f"""
       </div>
       <div class="take"><span class="tick"></span><p>O OGU lidera em quantidade; o financiamento concentra o valor.</p></div>
     </div>
-{foot('Fonte: MCid · Novo PAC · 18/08/2026 · Cinco propostas de Mobilidade combinam OGU e FIN e contam apenas no total')}  </section>
+{foot(f'Fonte: MCid · Novo PAC · {DATA} · propostas com OGU e FIN contam uma vez em cada fonte')}  </section>
 
   <!-- ============ 04 · INVESTIMENTO POR FONTE ============ -->
   <section class="p2 content" data-label="Por fonte">
@@ -429,7 +436,7 @@ SLIDES = f"""
       </div>
       <div class="take"><span class="tick"></span><p>A carteira herdada de dezembro de 2022 segue idêntica ao balanço anterior: {N_MIG} contratos migrados.</p></div>
     </div>
-{foot('Fonte: MCid · Novo PAC — carteira migrada (retomadas) · dados de 18/08/2026')}  </section>
+{foot(f'Fonte: MCid · Novo PAC — carteira migrada (retomadas) · dados de {DATA}')}  </section>
 
   <!-- ============ 06 · NOVAS SELEÇÕES ============ -->
   <section class="p2 content" data-label="Novas Seleções">
@@ -449,7 +456,7 @@ SLIDES = f"""
       </div>
       <div class="take"><span class="tick"></span><p>{N_NOV} propostas e R$ {V_NOV_BI} bilhões desde 2024.</p></div>
     </div>
-{foot('Fonte: MCid · Novo PAC · 18/08/2026 · Cinco propostas de Mobilidade combinam OGU e FIN e ficam fora das colunas por fonte')}  </section>
+{foot(f'Fonte: MCid · Novo PAC · {DATA} · propostas com OGU e FIN contam uma vez em cada fonte')}  </section>
 
   <!-- ============ 07 · PROPOSTAS ENQUADRADAS ============ -->
   <section class="p2 content" data-label="Enquadradas">
@@ -546,7 +553,7 @@ SLIDES = f"""
       <div class="title-row">
         <div class="title-block">
           <h2 class="title">Seleções de 2026</h2>
-          <p class="dek">Propostas que entraram na carteira em 2026 — todas via financiamento.</p>
+          <p class="dek">{DEK_26}</p>
         </div>
         {LEG_SEL_ENQ}
       </div>
@@ -556,7 +563,7 @@ SLIDES = f"""
           <div class="bignum">{N_26}</div>
           <div class="lbl">Propostas</div>
           <div class="stat2"><span style="font-size:.55em; font-weight:700; color:var(--ink-soft);">R$ </span>{V_26_BI}<span style="font-size:.55em; font-weight:700; color:var(--ink-soft);"> bi</span></div>
-          <div class="lbl">Valor FIN</div>
+          <div class="lbl">{LBL_V26}</div>
         </div>
         <div class="col grow" style="justify-content:center;">
           <table class="data dense">
@@ -587,7 +594,7 @@ SLIDES = f"""
     <div class="bot" style="border-top:0; padding-top:18px;">
       <span class="org" style="color:var(--paper);">Ministério das Cidades</span>
       <div style="flex: 1;"></div>
-      <span class="org" style="color:var(--paper);">Agosto de 2026</span>
+      <span class="org" style="color:var(--paper);">{MES_ANO}</span>
     </div>
   </section>
 
