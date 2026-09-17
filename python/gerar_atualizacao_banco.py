@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gera o arquivo de atualização para quem administra o banco (se_pac).
 
-Compara a planilha local (data/base_completa_atualizada_*.xlsx) com a tabela
+Compara a planilha local (data/base_completa_*.xlsx, protegida por senha) com a tabela
 se_pac.tab_selecao_novopac_previsto e produz atualizacao_banco_<data>.xlsx com:
 
 - Leia-me: resumo das ações e a conciliação dos totais;
@@ -23,6 +23,7 @@ Uso:
 Requer python/config.env (credenciais — arquivo gitignorado).
 """
 import os
+import sys
 from datetime import date
 
 import pandas as pd
@@ -32,7 +33,10 @@ from sqlalchemy.engine import URL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(HERE)
-XLSX_LOCAL = os.path.join(RAIZ, 'data', 'base_completa_atualizada_20260818_1126.xlsx')
+sys.path.insert(0, RAIZ)
+import dados  # noqa: E402  (abre a planilha protegida por senha)
+
+XLSX_LOCAL = os.path.join(RAIZ, 'data', 'base_completa_18082026_1126.xlsx')
 DATA_BASE_LOCAL = '2026-08-18'
 SAIDA = os.path.join(RAIZ, f'atualizacao_banco_{date.today():%Y%m%d}.xlsx')
 
@@ -48,7 +52,7 @@ url = URL.create(
 eng = create_engine(url, connect_args={'connect_timeout': 15})
 
 banco = pd.read_sql(text('SELECT * FROM se_pac.tab_selecao_novopac_previsto'), eng)
-local = pd.read_excel(XLSX_LOCAL, header=1)
+local = pd.read_excel(dados.abrir(XLSX_LOCAL), header=1)
 print(f'banco: {len(banco)} linhas | planilha local: {len(local)} linhas')
 
 

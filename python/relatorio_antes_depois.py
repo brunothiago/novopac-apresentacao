@@ -38,7 +38,7 @@ REF = sys.argv[1] if len(sys.argv) > 1 else 'HEAD'
 HOJE = f'{date.today():%Y%m%d}'
 SAIDA = os.path.join(RAIZ, f'relatorio_antes_depois_{HOJE}')
 MCMV = ('MCMV FNHIS', 'MCMV FNHIS SUB50')
-XLSX_ANTIGO = os.path.join(RAIZ, 'data', 'base_completa_atualizada_20260818_1126.xlsx')
+XLSX_ANTIGO = os.path.join(RAIZ, 'data', 'base_completa_18082026_1126.xlsx')
 
 
 # ------------------------------------------------------------------ leitura do index.html
@@ -192,7 +192,7 @@ def por_proposta(df):
         ogu=('vlr_portaria_ogu', 'sum'), fin=('vlr_portaria_fin', 'sum'))
 
 
-antigo = pd.read_excel(XLSX_ANTIGO, header=1)
+antigo = pd.read_excel(dados.abrir(XLSX_ANTIGO), header=1)
 antigo = antigo[~antigo.modalidade.isin(MCMV)]
 x_novo, _, _, foto = dados.load()
 x_novo = x_novo[~x_novo.modalidade.isin(MCMV)]
@@ -245,8 +245,8 @@ for s in mud.situacao:
 
 n_2023 = int((pd.read_excel(dados.abrir(foto)).query("status_selecao != 'retomada'").ano_selecao == 2023).sum())
 NOTAS = [
-    f'Antes: index.html versão {VER_A} (dados de {DATA_A}) — planilha base_completa_atualizada_20260818_1126.xlsx '
-    'e CSV view_sis_novopac_previsto_unificado_202608180817.csv.',
+    f'Antes: index.html versão {VER_A} (dados de {DATA_A}) — planilha base_completa_18082026_1126.xlsx '
+    'e view_sis_novopac_previsto_18082026_0817.xlsx.',
     f'Depois: index.html versão {VER_D} (dados de {DATA_D}) — foto da tabela se_cgpac.tab_base_unica_gm '
     f'({os.path.basename(foto)}).',
     'Migradas: status_selecao = "retomada" no banco; as 2 propostas MCMV seguem fora da contagem.',

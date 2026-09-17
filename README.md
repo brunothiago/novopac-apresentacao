@@ -65,6 +65,19 @@ do painel, então é gravada com a criptografia padrão do Excel, usando `SENHA_
 build nem quem baixar pelo painel abre a planilha. A foto leva só as colunas que a planilha pública
 anterior já trazia + `dte_carga` — as colunas de controle interno da tabela ficam de fora.
 
+**Convenção dos arquivos em `data/`**: `<nome>_<DDMMYYYY>_<HHMM>.xlsx`, sempre protegidos pela mesma
+senha, uma versão por extração. Vale também para as bases antigas, que deixaram de alimentar a
+apresentação mas seguem no repositório para conferência:
+
+| Arquivo | O que é |
+|---|---|
+| `base_unica_gm_17092026_1141.xlsx` | foto atual da tabela do banco (fonte da apresentação) |
+| `base_completa_18082026_1126.xlsx` | seleções de 18/08 (cabeçalho na 2ª linha) — base antiga |
+| `view_sis_novopac_previsto_18082026_0817.xlsx` | migradas de 18/08, antes em CSV — base antiga |
+
+Para proteger e renomear uma base nova nesse padrão:
+`uv run --with pandas --with openpyxl --with python-dotenv --with msoffcrypto-tool python python/proteger_base.py data/<arquivo> --nome <prefixo>`
+
 | Recorte (17/09/2026) | Filtro na tabela |
 |---|---|
 | Migradas (557) | `status_selecao == "retomada"` |
@@ -103,7 +116,7 @@ versao-detalhada.html   apresentação detalhada (painéis, barras e slides extr
 build.py                gerador da versão simples — monta o index.html
 build_detalhada.py      gerador da versão detalhada
 dados.py                carga da foto do banco (regras de recorte comuns aos dois builds)
-data/                   fotos protegidas da tabela se_cgpac.tab_base_unica_gm (e extrações antigas)
+data/                   bases protegidas por senha (foto do banco e extrações antigas)
 python/                 extrator do banco, relatório antes × depois e conciliação se_pac
 assets/deck.css         design system do deck (gov.br)
 assets/deck-stage.js    web component <deck-stage> (navegação, escala, impressão)
