@@ -18,6 +18,7 @@ Saídas (raiz do projeto):
 
 Uso: python3 python/relatorio_antes_depois.py [ref_git_antes]
 """
+import glob
 import json
 import os
 import re
@@ -39,6 +40,18 @@ HOJE = f'{date.today():%Y%m%d}'
 SAIDA = os.path.join(RAIZ, f'relatorio_antes_depois_{HOJE}')
 MCMV = ('MCMV FNHIS', 'MCMV FNHIS SUB50')
 XLSX_ANTIGO = os.path.join(RAIZ, 'data', 'base_completa_18082026_1126.xlsx')
+
+
+def base_antes():
+    """Base do 'antes' na comparação proposta a proposta: a foto anterior à mais recente.
+
+    Sem foto anterior (primeira extração do banco), cai na planilha de 18/08, que era a fonte
+    da apresentação antes do banco. Pode ser passada no 2º argumento da linha de comando.
+    """
+    if len(sys.argv) > 2:
+        return os.path.abspath(sys.argv[2])
+    fotos = sorted(glob.glob(f'{RAIZ}/data/base_unica_gm_[0-9]*.xlsx'), key=dados.quando)
+    return fotos[-2] if len(fotos) > 1 else XLSX_ANTIGO
 
 
 # ------------------------------------------------------------------ leitura do index.html
@@ -192,7 +205,12 @@ def por_proposta(df):
         ogu=('vlr_portaria_ogu', 'sum'), fin=('vlr_portaria_fin', 'sum'))
 
 
-antigo = pd.read_excel(dados.abrir(XLSX_ANTIGO), header=1)
+ANTES = base_antes()
+FOTO_ANTES = os.path.basename(ANTES).startswith('base_unica_gm')
+if FOTO_ANTES:  # foto do banco: mesmo recorte de seleções da apresentação
+    antigo, _, DATA_ANTES, _ = dados.load(ANTES)
+else:  # planilha antiga (cabeçalho na 2ª linha), que já vinha só com as seleções
+    antigo, DATA_ANTES = pd.read_excel(dados.abrir(ANTES), header=1), None
 antigo = antigo[~antigo.modalidade.isin(MCMV)]
 x_novo, _, _, foto = dados.load()
 x_novo = x_novo[~x_novo.modalidade.isin(MCMV)]
@@ -243,15 +261,24 @@ for s in mud.situacao:
         for m in s[7:].split(', '):
             det[m] = det.get(m, 0) + 1
 
-n_2023 = int((pd.read_excel(dados.abrir(foto)).query("status_selecao != 'retomada'").ano_selecao == 2023).sum())
+foto_df = pd.read_excel(dados.abrir(foto))
+n_2023 = int((foto_df[foto_df.status_selecao.isin(dados.SELECOES)].ano_selecao == 2023).sum())
+n_subst = int((foto_df.status_selecao == 'substituída').sum())
+ORIGEM_ANTES = (f'foto da tabela se_cgpac.tab_base_unica_gm ({os.path.basename(ANTES)})' if FOTO_ANTES
+                else 'planilha base_completa_18082026_1126.xlsx e view_sis_novopac_previsto_18082026_0817.xlsx')
 NOTAS = [
-    f'Antes: index.html versão {VER_A} (dados de {DATA_A}) — planilha base_completa_18082026_1126.xlsx '
-    'e view_sis_novopac_previsto_18082026_0817.xlsx.',
+    f'Antes: index.html versão {VER_A} (dados de {DATA_A}) — {ORIGEM_ANTES}.',
     f'Depois: index.html versão {VER_D} (dados de {DATA_D}) — foto da tabela se_cgpac.tab_base_unica_gm '
     f'({os.path.basename(foto)}).',
     'Migradas: status_selecao = "retomada" no banco; as 2 propostas MCMV seguem fora da contagem.',
+    f'Substituídas: {n_subst} {"linha" if n_subst == 1 else "linhas"} com status_selecao = "substituída" '
+    'no banco (seleções trocadas por outras, guardadas só como histórico) ficam fora de toda a contagem.'
+    if n_subst else
+    'Substituídas: nenhuma linha com status_selecao = "substituída" na foto.',
     'OGU/FIN: as 5 propostas de Mobilidade que tinham uma linha "OGU/FIN" vêm em duas linhas no banco '
-    '(uma OGU e uma FIN); cada linha conta 1 na sua fonte, então a quantidade total sobe 5 por esse motivo.',
+    '(uma OGU e uma FIN); cada linha conta 1 na sua fonte, então a quantidade total sobe 5 por esse motivo.'
+    if not FOTO_ANTES else
+    'OGU/FIN: cada linha conta 1 na sua fonte — propostas com OGU e FIN vêm em duas linhas.',
     f'Ano 2023: {n_2023} {"seleção" if n_2023 == 1 else "seleções"} com ano_selecao 2023 no banco '
     'conta como 2024 (botão "2023").',
     f'Proposta a proposta (seleções, chave nº da proposta + identificador + fonte): '

@@ -71,22 +71,27 @@ apresentação mas seguem no repositório para conferência:
 
 | Arquivo | O que é |
 |---|---|
-| `base_unica_gm_17092026_1141.xlsx` | foto atual da tabela do banco (fonte da apresentação) |
+| `base_unica_gm_21092026_1359.xlsx` | foto atual da tabela do banco (fonte da apresentação) |
+| `base_unica_gm_17092026_1141.xlsx` | foto de 17/09 — primeira extração publicada |
 | `base_completa_18082026_1126.xlsx` | seleções de 18/08 (cabeçalho na 2ª linha) — base antiga |
 | `view_sis_novopac_previsto_18082026_0817.xlsx` | migradas de 18/08, antes em CSV — base antiga |
 
 Para proteger e renomear uma base nova nesse padrão:
 `uv run --with pandas --with openpyxl --with python-dotenv --with msoffcrypto-tool python python/proteger_base.py data/<arquivo> --nome <prefixo>`
 
-| Recorte (17/09/2026) | Filtro na tabela |
+| Recorte (21/09/2026) | Filtro na tabela |
 |---|---|
 | Migradas (557) | `status_selecao == "retomada"` |
-| Seleções (2.890, sem MCMV) | `status_selecao` `"selecionada"` ou `"enquadrada"` |
+| Seleções (2.893, sem MCMV) | `status_selecao` `"selecionada"` ou `"enquadrada"` |
+| Fora da conta (14) | `status_selecao == "substituída"` |
 
 - Convenção de totais (igual à apresentação original): **migradas + selecionadas + enquadradas FIN**.
 - Cada linha conta 1. Propostas com OGU e FIN vêm em duas linhas (uma por fonte) e contam uma
   vez em cada fonte — não existe mais a fonte "OGU/FIN".
 - "Atualizado em" é a data da carga mais recente da tabela (`max(dte_carga)`).
+- `status_selecao == "substituída"` fica **fora de toda a contagem**: são seleções trocadas por
+  outras, que a tabela guarda só como histórico (voltaram ao banco em 17/09/2026 pelo log de
+  exclusão). Elas seguem na planilha do botão "XLSX Base", mas não entram em nenhum slide.
 - As 2 propostas MCMV (`MCMV FNHIS` / `MCMV FNHIS SUB50`) ficam **fora da contagem** da
   versão simples; a versão detalhada ainda as inclui (como "MCMV (Calamidade RS)").
 - Rótulo: `Médias e Grandes Cidades` → "Mobilidade: Médias e Grandes Cidades".
@@ -102,7 +107,8 @@ Para proteger e renomear uma base nova nesse padrão:
    Suba a `VERSAO` e acrescente a linha em `HISTORICO` no `build.py`.
 3. O `index.html` é regenerado com os dados embutidos — as tabelas são recalculadas
    no navegador a partir das propostas individuais, por isso o filtro de UF funciona offline.
-4. (Opcional) Relatório antes × depois em relação ao último commit:
+4. (Opcional) Relatório antes × depois em relação ao último commit (o "antes" proposta a
+   proposta é a foto anterior em `data/`; outra base pode vir no 2º argumento):
    `python3 python/relatorio_antes_depois.py` (gera o .xlsx e um .json) e
    `node python/relatorio_docx.js relatorio_antes_depois_<AAAAMMDD>.json` (gera o .docx; requer o pacote npm `docx`).
 

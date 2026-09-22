@@ -8,6 +8,9 @@ decifrada em memória, sem gravar cópia aberta em disco.
 
 - migradas: status_selecao == 'retomada' (ano_selecao é o ano do contrato — não é usado);
 - seleções: status_selecao 'selecionada' ou 'enquadrada';
+- 'substituída' fica fora das duas: são seleções trocadas por outras, que a tabela guarda só
+  como histórico (voltaram ao banco em 17/09/2026 pelo log de exclusão) — nunca entraram na
+  apresentação e não devem entrar;
 - ano_selecao 2023 conta como 2024 (mesmo botão "2023" do recorte por ano);
 - cada linha conta 1 — propostas com OGU e FIN vêm em duas linhas (uma por fonte).
 """
@@ -22,7 +25,8 @@ from dotenv import load_dotenv
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VAL = ['vlr_portaria_total', 'vlr_portaria_ogu', 'vlr_portaria_fin']
-STATUS = {'retomada', 'selecionada', 'enquadrada'}
+STATUS = {'retomada', 'selecionada', 'enquadrada', 'substituída'}
+SELECOES = ('selecionada', 'enquadrada')  # 'substituída' fica de fora (ver docstring)
 # nome atual e o das primeiras fotos, antes do versionamento por data/hora
 FORMATOS = ('%d%m%Y_%H%M', '%Y%m%d')
 
@@ -79,6 +83,6 @@ def load(caminho=None):
     data = pd.to_datetime(df.dte_carga).max()
 
     mig = df[df.status_selecao == 'retomada'].copy()
-    x = df[df.status_selecao != 'retomada'].copy()
+    x = df[df.status_selecao.isin(SELECOES)].copy()
     x['ano_selecao'] = x.ano_selecao.astype(int).replace({2023: 2024})
     return x, mig, f'{data:%d/%m/%Y}', caminho

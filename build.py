@@ -25,7 +25,7 @@ import dados
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = f'{HERE}/index.html'
 PDF_NAME = 'novopac-mcid-investimentos.pdf'
-VERSAO = '1.17'  # subir a cada commit que altere a apresentação
+VERSAO = '1.18'  # subir a cada commit que altere a apresentação
 # FIRECE — financiamento da mesma temática FORA do escopo do Novo PAC.
 # Valor fixo: atualizar somente quando o usuário indicar (e subir a VERSAO).
 FIRECE_VALOR = 'R$ 6,5 bi'
@@ -33,6 +33,7 @@ FIRECE_DESC = 'Reconstrução e adaptação após os eventos extremos no RS.'
 FIRECE_LINK = 'https://www.in.gov.br/web/dou/-/resolucao-n-1-comite-gestor-do-fundo/cc-de-13-de-dezembro-de-2024-633793584'
 # histórico exibido no popup do "versão x.y" (encerramento) — acrescentar uma linha a cada versão
 HISTORICO = [
+    ('1.18', 'Dados de 21/09/2026: novas seleções de Frota e recorte de ano ajustado.'),
     ('1.17', 'Base em Excel protegida por senha, com versão por data/hora.'),
     ('1.16', 'Dados passam a vir da base única do banco (se_cgpac).'),
     ('1.15', 'Recorte de ano passa a excluir as migradas.'),
