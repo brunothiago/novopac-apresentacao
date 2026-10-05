@@ -71,7 +71,8 @@ apresentação mas seguem no repositório para conferência:
 
 | Arquivo | O que é |
 |---|---|
-| `base_unica_gm_21092026_1359.xlsx` | foto atual da tabela do banco (fonte da apresentação) |
+| `base_unica_gm_02102026_1048.xlsx` | foto atual da tabela do banco (fonte da apresentação) |
+| `base_unica_gm_21092026_1359.xlsx` | foto de 21/09 |
 | `base_unica_gm_17092026_1141.xlsx` | foto de 17/09 — primeira extração publicada |
 | `base_completa_18082026_1126.xlsx` | seleções de 18/08 (cabeçalho na 2ª linha) — base antiga |
 | `view_sis_novopac_previsto_18082026_0817.xlsx` | migradas de 18/08, antes em CSV — base antiga |
@@ -79,11 +80,11 @@ apresentação mas seguem no repositório para conferência:
 Para proteger e renomear uma base nova nesse padrão:
 `uv run --with pandas --with openpyxl --with python-dotenv --with msoffcrypto-tool python python/proteger_base.py data/<arquivo> --nome <prefixo>`
 
-| Recorte (21/09/2026) | Filtro na tabela |
+| Recorte (02/10/2026) | Filtro na tabela |
 |---|---|
 | Migradas (557) | `status_selecao == "retomada"` |
-| Seleções (2.893, sem MCMV) | `status_selecao` `"selecionada"` ou `"enquadrada"` |
-| Fora da conta (14) | `status_selecao == "substituída"` |
+| Seleções (2.949, sem MCMV) | `status_selecao` `"selecionada"` ou `"enquadrada"` |
+| Fora da conta (15) | `status_selecao == "substituída"` |
 
 - Convenção de totais (igual à apresentação original): **migradas + selecionadas + enquadradas FIN**.
 - Cada linha conta 1. Propostas com OGU e FIN vêm em duas linhas (uma por fonte) e contam uma
