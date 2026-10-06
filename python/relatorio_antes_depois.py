@@ -198,7 +198,8 @@ def por_proposta(df):
     df['identificador'] = df.identificador.astype(str).str.strip()
     for c in ('vlr_portaria_ogu', 'vlr_portaria_fin'):
         df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
-    return df.groupby(['num_proposta_selecao', 'identificador', 'fonte']).agg(
+    # dropna=False: no pandas 3 o astype(str) mantém o NaN, e o groupby descartaria as linhas sem identificador
+    return df.groupby(['num_proposta_selecao', 'identificador', 'fonte'], dropna=False).agg(
         uf=('uf', 'first'), modalidade=('modalidade', 'first'), linhas=('uf', 'size'),
         status=('status_selecao', lambda s: ' + '.join(sorted(set(s)))),
         ano=('ano_selecao', lambda s: ' + '.join(str(int(v)) for v in sorted(set(s)))),

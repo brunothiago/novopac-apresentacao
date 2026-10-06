@@ -57,7 +57,8 @@ Convenção: **subir o número a cada commit** que altere a apresentação e rod
 Fonte única: tabela **`se_cgpac.tab_base_unica_gm`** (banco `corporativo`), lida a partir de uma
 foto em `data/base_unica_gm_<DDMMYYYY>_<HHMM>.xlsx` — o build não conecta no banco. A carga e as
 regras ficam em `dados.py`, usado pelos dois builds. Uma versão por extração completa do banco; a
-data/hora no nome é a da carga mais recente da tabela, e o build usa sempre a foto mais nova.
+data/hora no nome é a da carga mais recente da tabela (ou a da extração, se esse nome já existir —
+exclusão de linhas não muda a carga), e o build usa sempre a foto mais nova.
 
 **A foto vai protegida por senha.** O repositório é público e ela é o arquivo do botão "XLSX Base"
 do painel, então é gravada com a criptografia padrão do Excel, usando `SENHA_BASE_XLSX` do
@@ -71,7 +72,8 @@ apresentação mas seguem no repositório para conferência:
 
 | Arquivo | O que é |
 |---|---|
-| `base_unica_gm_02102026_1048.xlsx` | foto atual da tabela do banco (fonte da apresentação) |
+| `base_unica_gm_06102026_0855.xlsx` | foto atual da tabela do banco (fonte da apresentação) — nome pela hora da extração: desde a de 02/10 só houve exclusão |
+| `base_unica_gm_02102026_1048.xlsx` | foto de 02/10 |
 | `base_unica_gm_21092026_1359.xlsx` | foto de 21/09 |
 | `base_unica_gm_17092026_1141.xlsx` | foto de 17/09 — primeira extração publicada |
 | `base_completa_18082026_1126.xlsx` | seleções de 18/08 (cabeçalho na 2ª linha) — base antiga |
@@ -80,10 +82,10 @@ apresentação mas seguem no repositório para conferência:
 Para proteger e renomear uma base nova nesse padrão:
 `uv run --with pandas --with openpyxl --with python-dotenv --with msoffcrypto-tool python python/proteger_base.py data/<arquivo> --nome <prefixo>`
 
-| Recorte (02/10/2026) | Filtro na tabela |
+| Recorte (06/10/2026) | Filtro na tabela |
 |---|---|
 | Migradas (557) | `status_selecao == "retomada"` |
-| Seleções (2.949, sem MCMV) | `status_selecao` `"selecionada"` ou `"enquadrada"` |
+| Seleções (2.948, sem MCMV) | `status_selecao` `"selecionada"` ou `"enquadrada"` |
 | Fora da conta (15) | `status_selecao == "substituída"` |
 
 - Convenção de totais (igual à apresentação original): **migradas + selecionadas + enquadradas FIN**.

@@ -5,7 +5,9 @@ A apresentação (build.py e build_detalhada.py) lê essa foto — não conecta 
 para o index.html continuar autocontido e funcionando offline.
 
 Gera data/base_unica_gm_<DDMMYYYY>_<HHMM>.xlsx, com a data/hora da carga mais recente
-(max(dte_carga)) — uma versão por extração completa do banco.
+(max(dte_carga)) — uma versão por extração completa do banco. Se esse nome já existe (a
+tabela mudou só por exclusão de linhas, que não altera o dte_carga), usa a data/hora da
+extração, para não sobrescrever a foto anterior.
 
 A foto vai para o repositório (público) e é o arquivo do botão "XLSX Base" do painel, por isso:
 - leva só as colunas que a planilha pública anterior já trazia + dte_carga (as colunas de
@@ -21,6 +23,7 @@ Requer python/config.env (credenciais e senha — arquivo gitignorado).
 """
 import io
 import os
+from datetime import datetime
 
 import msoffcrypto
 import pandas as pd
@@ -60,6 +63,8 @@ eng = create_engine(url, connect_args={'connect_timeout': 15,
 df = pd.read_sql(text(f'SELECT {", ".join(COLUNAS)} FROM {TABELA} ORDER BY id_linha'), eng)
 carga = pd.to_datetime(df.dte_carga).max()
 saida = os.path.join(RAIZ, 'data', f'base_unica_gm_{carga:%d%m%Y_%H%M}.xlsx')
+if os.path.exists(saida):
+    saida = os.path.join(RAIZ, 'data', f'base_unica_gm_{datetime.now():%d%m%Y_%H%M}.xlsx')
 
 # grava em memória e só escreve em disco já cifrado — o arquivo aberto nunca chega a existir
 buf = io.BytesIO()
